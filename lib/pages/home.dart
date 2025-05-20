@@ -37,7 +37,7 @@ class HomePageState extends State<HomePage> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: Colors.amber,
+              image: DecorationImage(image: AssetImage('assets/images/avator.png')),
               borderRadius: BorderRadius.circular(8)
             ),
           ),

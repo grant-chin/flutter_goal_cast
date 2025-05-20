@@ -31,6 +31,8 @@ flutter:
     - assets/images/tabbar/
     - assets/images/bg/
     - assets/images/map/
+    - assets/images/game1/
+    - assets/images/game2/
 
   fonts:
     - family: Manrope

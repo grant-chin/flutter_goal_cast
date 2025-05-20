@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/pages/games/kick_clash.dart';
+import 'package:flutter_goal_cast/pages/games/shot_daily.dart';
 import 'package:get/get.dart';
 import 'common/share_pref.dart';
 import 'package:flutter/services.dart';
@@ -35,7 +37,10 @@ class MainApp extends StatelessWidget {
         ),
         nextScreen: const IndexPage(),
       ),
-      getPages: [],
+      getPages: [
+        GetPage(name: '/kick_clash', page: () => KickClash()),
+        GetPage(name: '/shot_daily', page: () => ShotDaily()),
+      ],
     );
   }
 }

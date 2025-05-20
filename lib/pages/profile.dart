@@ -33,7 +33,7 @@ class ProfilePageState extends State<ProfilePage> {
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          image: DecorationImage(image: AssetImage('assets/images/avator.png')),
                           borderRadius: BorderRadius.circular(12)
                         ),
                       ),
