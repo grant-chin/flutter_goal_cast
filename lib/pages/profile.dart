@@ -14,7 +14,7 @@ class ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Expanded(child: Stack(
+      child: Stack(
         children: [
           Positioned(child: Container(color: Color(0xFF070123))),
           Positioned(child: Image.asset('assets/images/bg/profile_bg.png')),
@@ -118,7 +118,7 @@ class ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ],
-      ))
+      )
     );
   }
 

@@ -22,10 +22,9 @@ class MapPageState extends State<MapPage> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset('assets/images/map/manage_team.png', height: 84),
-                  Image.asset('assets/images/map/manage_players.png', height: 84),
+                  Image.asset('assets/images/map/manage_team.png', width: MediaQuery.of(context).size.width / 2 - 16),
+                  Image.asset('assets/images/map/manage_players.png', width: MediaQuery.of(context).size.width / 2 - 16),
                 ],
               ),
             ),

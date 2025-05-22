@@ -46,3 +46,16 @@ flutter:
         - asset: assets/fonts/Manrope/Manrope-Regular.ttf
         - asset: assets/fonts/Manrope/Manrope-SemiBold.ttf
           style: italic
+    - family: Lexend
+      fonts: 
+        - asset: assets/fonts/Lexend/Lexend-VariableFont_wght.ttf
+        - asset: assets/fonts/Lexend/Lexend-Black.ttf
+        - asset: assets/fonts/Lexend/Lexend-Bold.ttf
+        - asset: assets/fonts/Lexend/Lexend-ExtraBold.ttf
+        - asset: assets/fonts/Lexend/Lexend-ExtraLight.ttf
+        - asset: assets/fonts/Lexend/Lexend-Light.ttf
+        - asset: assets/fonts/Lexend/Lexend-Medium.ttf
+        - asset: assets/fonts/Lexend/Lexend-Regular.ttf
+        - asset: assets/fonts/Lexend/Lexend-SemiBold.ttf
+        - asset: assets/fonts/Lexend/Lexend-Thin.ttf
+          style: italic
