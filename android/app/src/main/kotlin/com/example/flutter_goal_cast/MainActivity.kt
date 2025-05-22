@@ -1,4 +1,4 @@
-package com.example.flutter_goal_cast
+package com.goal.goalcast
 
 import io.flutter.embedding.android.FlutterActivity
 
