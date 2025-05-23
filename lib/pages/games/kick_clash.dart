@@ -1,9 +1,10 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, deprecated_member_use, use_build_context_synchronously
 
 import 'dart:math';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/common/utils.dart';
 import 'package:flutter_goal_cast/wedget/primary_btn.dart';
 import 'package:get/get.dart';
 
@@ -30,6 +31,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
   bool _toastRound = false;
   final List _leftShots = []; // 左边抽到次数
   final List _rightShots = []; // 右边抽到次数
+  int _domainCount = 0; // 剩余踢球数
   int _leftScore = 0; // 左边分数
   int _rightScore = 0; // 右边分数
   bool _spinDisabled = true;
@@ -38,7 +40,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
   late AnimationController _controller;
   late Animation _animation;
   // 二阶贝塞尔曲线 p0：开始点、p1：控制点、p2：结束点
-  Offset? p0, p1, p2;
+  Offset p0 = Offset(0,0), p1 = Offset(0,0), p2 = Offset(0,0);
   // 矩阵
   Matrix4 _matrix4 = Matrix4.identity();
   // 移动轨迹点，即移动物的中心点
@@ -47,7 +49,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
   Offset transSize = Offset(0.0, 0.0);
   /// 初始化动画
   _initAnim() {
-    _controller = AnimationController(duration: Duration(seconds: 1), vsync: this);
+    _controller = AnimationController(duration: Duration(milliseconds: 1000), vsync: this);
     _animation = Tween(begin: 0.0, end: 1.0).animate(_controller);
     _animation.addListener(() {
       // t 动态变化的值
@@ -55,8 +57,8 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
       setState(() {
         _matrix4 = Matrix4.identity();
         // 根据二阶贝塞尔曲线计算移动轨迹点
-        double left = pow(1 - t, 2) * p0!.dx + 2 * t * (1 - t) * p1!.dx + pow(t, 2) * p2!.dx;
-        double top = pow(1 - t, 2) * p0!.dy + 2 * t * (1 - t) * p1!.dy + pow(t, 2) * p2!.dy;
+        double left = pow(1 - t, 2) * p0.dx + 2 * t * (1 - t) * p1.dx + pow(t, 2) * p2.dx;
+        double top = pow(1 - t, 2) * p0.dy + 2 * t * (1 - t) * p1.dy + pow(t, 2) * p2.dy;
         // 设置移动
         if (bezierCenter == null) {
           transSize = Offset(0.0, 0.0);
@@ -64,7 +66,6 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
           transSize = Offset(transSize.dx - (bezierCenter!.dx - left),
               transSize.dy - (bezierCenter!.dy - top));
         }
-        print(transSize);
         _matrix4.translate(transSize.dx, transSize.dy, 0.0);
         bezierCenter = Offset(left, top);
         // 设置缩小倍数
@@ -72,20 +73,37 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
       });
     });
   }
-  // 初始化数值
-  _calculateInitialValue(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    if (p0 == null) {
-      p0 = Offset(size.width/2, size.height/2);
-      p1 = Offset(size.width, 160);
-      p2 = Offset(size.width/2, 200);
-    }
-  }
 
   @override
   void initState() {
     super.initState();
     _initAnim();
+  }
+
+  // 重置游戏
+  _resetGame() {
+    setState(() {
+      _loading = false; // 开启对决动画
+      _closeLoading = true; // 是否已关闭对决动画
+      _start = false; // 是否已开始游戏
+      _spining = false; // 正在旋转
+      _overSpin = false; // 结束旋转
+      _angle = 0; // 旋转角度
+      _endIndex = 0; // 结束下标
+      _turn = ''; // 当前回合
+      _toastYourTurn = false;
+      _toastOppsTurn = false;
+      _roundNum = 0;
+      _toastRound = false;
+      _leftShots.clear();
+      _rightShots.clear();
+      _domainCount = 0; // 剩余踢球数
+      _leftScore = 0; // 左边分数
+      _rightScore = 0; // 右边分数
+      _spinDisabled = true;
+
+      _controller.reset();
+    });
   }
 
   // 开始游戏
@@ -125,19 +143,60 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
     });
     if (type == 0) {
       await Future.delayed(Duration(seconds: 1));
-      _onOppsTurn();
+      _turn == 'left' ? _onOppsTurn() : _onNextRound();
     } else {
+      setState(() => _domainCount = type);
       _onKickBall();
+      await Future.delayed(Duration(seconds: type * 2));
+      _turn == 'left' ? _onOppsTurn() : _onNextRound();
     }
   }
 
   // 踢球动画
   _onKickBall() {
+    if (p0 != Offset.zero) _controller.reset();
+    Size size = MediaQuery.of(context).size;
+    double scale =  size.width / 402;
+    int xP1 = Random().nextInt(250) - 100;
+    int yP1 = Random().nextInt(200) - 100;
+    int xP2 = Random().nextInt(300) - 100 - 50;
+    int yP2 = Random().nextInt(80) + 80;
+
+    if (xP2 > -50 && xP2 < 80) {
+      Future.delayed(Duration(seconds: 1), () {
+        switch(_turn) {
+          case 'left': setState(() => _leftScore++); break;
+          case 'right': setState(() => _rightScore++); break;
+        }
+      });
+    } else {
+      setState(() {
+        xP2 < 0 ? xP2 -= 100 : xP2 += 100;
+      });
+    }
+    setState(() {
+      p0 = Offset(size.width/2, size.height/2);
+      p1 = Offset(size.width/2 + xP1 * scale, yP1 * scale); // -100 200
+      p2 = Offset(size.width/2 + xP2 * scale, size.height/2 - yP2 * scale); // -50 80 / 80 160
+    });
     _controller.forward();
+
+    setState(() => _domainCount--);
+    if (_domainCount > 0) {
+      Future.delayed(Duration(milliseconds: 2000), (){
+        _controller.reset();
+        _onKickBall();
+      });
+    }
   }
 
   // 下一回合
   _onNextRound() async {
+    if (p0 != Offset.zero) _controller.reset();
+    if (_roundNum == 3) {
+      _gameOver();
+      return;
+    }
     setState(() {
       _roundNum++;
       _toastRound = true;
@@ -149,6 +208,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
   }
   // 弹窗-你的回合
   _onYourTurn() async {
+    if (p0 != Offset.zero) _controller.reset();
     setState(() => _turn = 'left');
     setState(() => _toastYourTurn = true);
     await Future.delayed(Duration(milliseconds: 2000));
@@ -158,6 +218,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
   }
   // 弹窗-对手的回合
   _onOppsTurn() async {
+    if (p0 != Offset.zero) _controller.reset();
     setState(() => _turn = 'right'); 
     setState(() => _toastOppsTurn = true);
     await Future.delayed(Duration(milliseconds: 2000));
@@ -165,10 +226,27 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
     await Future.delayed(Duration(milliseconds: 1000));
     _onSpin();
   }
+  // 游戏结束
+  _gameOver() {
+    showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: Material(
+          color: Colors.black26,
+          child: OverScore(),
+        )
+      )
+    );
+    Future.delayed(Duration(milliseconds: 2000), () {
+      Get.back();
+      Utils.gameSuccess(context, point: 400, xp: 4, callback: _resetGame);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    _calculateInitialValue(context);
     return Material(
       child: Container(
         width: MediaQuery.of(context).size.width,
@@ -286,7 +364,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
                 decoration: BoxDecoration(
                   image: DecorationImage(image: AssetImage('assets/images/game1/bg_round.png'))
                 ),
-                child: Text('Round 1', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700, shadows: [
+                child: Text('Round $_roundNum', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700, shadows: [
                   Shadow(
                     color: Colors.black26, // 阴影颜色
                     offset: Offset(0, 4), // 阴影偏移量 (水平, 垂直)
@@ -548,6 +626,92 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
             ),
           ],
         )
+      ],
+    );
+  }
+
+  Widget OverScore() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Positioned(
+          top: MediaQuery.of(context).size.height / 2 - 200,
+          child: FadeInLeftBig(
+            from: 1000,
+            duration: Duration(milliseconds: 500),
+            child: Container(
+              width: 500,
+              height: 160,
+              decoration: BoxDecoration(
+                image: DecorationImage(image: AssetImage('assets/images/game1/bg_red.png'))
+              ),
+              child: Row(
+                spacing: 58,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(image: AssetImage('assets/images/avator_system.png')),
+                      border: Border.all(color: Color(0xFFE70C0C), width: 2),
+                      borderRadius: BorderRadius.circular(80)
+                    ),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('$_leftScore', style: TextStyle(color: Colors.white, fontSize: 56, fontWeight: FontWeight.w700, fontFamily: 'Lexend', height: 1)),
+                      Text('Thomas021', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
+                    ],
+                  )
+                ],
+              )
+            ),
+          )
+        ),
+        Positioned(
+          top: MediaQuery.of(context).size.height / 2 - 200 + 160,
+          child: FadeInRightBig(
+            from: 1000,
+            duration: Duration(milliseconds: 500),
+            child: Container(
+              width: 500,
+              height: 160,
+              decoration: BoxDecoration(
+                image: DecorationImage(image: AssetImage('assets/images/game1/bg_blue.png'))
+              ),
+              child: Row(
+                spacing: 58,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('$_rightScore', style: TextStyle(color: Colors.white, fontSize: 56, fontWeight: FontWeight.w700, fontFamily: 'Lexend', height: 1)),
+                      Text('Thomas021', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
+                    ],
+                  ),
+                  Container(
+                    width: 80,
+                    height: 80,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(image: AssetImage('assets/images/avator_system.png')),
+                      border: Border.all(color: Color(0xFF1165E4), width: 2),
+                      borderRadius: BorderRadius.circular(80)
+                    ),
+                  ),
+                ],
+              )
+            ),
+          )
+        ),
+        Positioned(
+          top: MediaQuery.of(context).size.height / 2 - 40 - 60,
+          child: FadeIn(delay: Duration(milliseconds: 400), child: Image.asset('assets/images/game1/bg_VS.png', width: 120))
+        ),
       ],
     );
   }
