@@ -1,6 +1,8 @@
 // ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:flutter_goal_cast/common/utils.dart';
+import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/pages/home.dart';
 import 'package:flutter_goal_cast/pages/challenge.dart';
 import 'package:flutter_goal_cast/pages/map.dart';
@@ -21,6 +23,10 @@ class IndexPageState extends State<IndexPage> {
   @override
   void initState() {
     super.initState();
+    UserController.init();
+    if (UserController.first.value != false) {
+      Utils.welcomeBonus(context);
+    }
   }
 
   /// Tab 改变

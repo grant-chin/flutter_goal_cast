@@ -33,16 +33,20 @@ class Utils {
   // 第一次进入
   static void welcomeBonus(BuildContext context) {
     Future.delayed(Duration(milliseconds: 100), () {
-      globalDialog(context, title: 'welcome_bouns', text: 'Thanks for joining — here’s a gift!', point: 1000, callback: (){});
+      globalDialog(context, title: 'Welcome Bouns', text: 'A new surprise awaits! Come back daily for free rewards.', point: 1000, callback: (){});
     });
   }
   // 游戏成功
-  static void gameSuccess(BuildContext context, { required int point, required int xp, Function? callback }) {
-    globalDialog(context, title: 'Goal! You Win!', text: 'Your shot hits the net! Well done, champion!', point: point, xp: xp, callback: callback);
+  static void gameSuccess(BuildContext context, { Function? callback }) {
+    globalDialog(context, title: 'Goal! You Win!', text: 'Your shot hits the net! Well done, champion!', point: 400, xp: 50, callback: callback);
   }
   // 游戏失败
-  static void gameFailed(BuildContext context, { int? point, required int xp, Function? callback }) {
-    globalDialog(context, title: 'failed', text: 'One step closer to greatness', point: point, xp: xp, callback: callback);
+  static void gameFailed(BuildContext context, { Function? callback }) {
+    globalDialog(context, title: 'Missed! You Lose!', text: 'Tough luck! Better luck next time!', xp: 20, callback: callback);
+  }
+  // 平局
+  static void gameDraw(BuildContext context, { Function? callback }) {
+    globalDialog(context, title: "It's a Draw!", text: 'A fair match — try again to take the lead!', point: 300, xp: 30, callback: callback);
   }
 
   static void globalDialog(context, { title, text, point, xp, callback }) {
@@ -51,7 +55,7 @@ class Utils {
       content.add(Column(
         children: [
           Image.asset('assets/icons/bets.png', width: 64),
-          Text('400', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700))
+          Text('$point', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700))
         ],
       ));
     }
@@ -59,7 +63,7 @@ class Utils {
       content.add(Column(
         children: [
           Image.asset('assets/icons/exp.png', width: 64),
-          Text('400', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700))
+          Text('$xp', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700))
         ],
       ));
     }

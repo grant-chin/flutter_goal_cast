@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/challenge.dart';
 
 class HomePage extends StatefulWidget {
@@ -84,14 +85,17 @@ class HomePageState extends State<HomePage> {
             Positioned(child: Image.asset('assets/images/bg/home_bg.png')),
             Container(
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).padding.bottom + 58 + 24),
+              padding: EdgeInsets.fromLTRB(0, 16, 0, MediaQuery.of(context).padding.bottom + 58 + 24),
               // color: Colors.amber,
               child: Column(
-                spacing: 16,
+                spacing: 24,
                 children: [
                   DailyReward(),
                   BoxMatches(),
-                  BoxChallenge()
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: BoxChallenge()
+                  )
                 ]
               ),
             ),
@@ -103,67 +107,144 @@ class HomePageState extends State<HomePage> {
 
   // 首发奖励/每日奖励
   Widget DailyReward() {
-    return Container(
-      height: 60,
-      decoration: BoxDecoration(
-        image: DecorationImage(image: AssetImage('assets/icons/box_everyday.png'))
-      ),
-      child: Row(
-        children: [
-          SizedBox(width: 96),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Welcome Bonus', style: TextStyle(color: Color(0xFF01FFF7), fontSize: 14, fontWeight: FontWeight.w700, shadows: [
-                Shadow(
-                  color: Color(0xFF170C34), // 阴影颜色
-                  offset: Offset(1, 1), // 阴影偏移量 (水平, 垂直)
-                  blurRadius: 0, // 阴影模糊程度
-                ),
-              ])),
-              SizedBox(height: 2),
-              Row(
-                children: [
-                  Text('Up to 1000', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500)),
-                  SizedBox(width: 4),
-                  Image.asset('assets/icons/bets.png', width: 16)
-                ],
-              )
-            ],
-          ),
-          Spacer(),
-          SizedBox(
-            height: 30,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.all(0),
-                foregroundColor: Colors.white,
-                backgroundColor: Color(0xFF01FFF7),
-                shadowColor: Colors.transparent,
-                overlayColor: Colors.black26,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              onPressed: (){},
-              child: Text('Claim', style: TextStyle(color: Color(0xFF070123), fontSize: 12, fontWeight: FontWeight.w700))
+    return Offstage(
+      offstage: UserController.first.value != true,
+      child: Container(
+        height: 60,
+        decoration: BoxDecoration(
+          image: DecorationImage(image: AssetImage('assets/icons/box_everyday.png'))
+        ),
+        child: Row(
+          children: [
+            SizedBox(width: 96),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Welcome Bonus', style: TextStyle(color: Color(0xFF01FFF7), fontSize: 14, fontWeight: FontWeight.w700, shadows: [
+                  Shadow(
+                    color: Color(0xFF170C34), // 阴影颜色
+                    offset: Offset(1, 1), // 阴影偏移量 (水平, 垂直)
+                    blurRadius: 0, // 阴影模糊程度
+                  ),
+                ])),
+                SizedBox(height: 2),
+                Row(
+                  children: [
+                    Text('Up to 1000', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500)),
+                    SizedBox(width: 4),
+                    Image.asset('assets/icons/bets.png', width: 16)
+                  ],
+                )
+              ],
             ),
-          ),
-          SizedBox(width: 20)
-        ],
-      )
+            Spacer(),
+            SizedBox(
+              height: 30,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.all(0),
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color(0xFF01FFF7),
+                  shadowColor: Colors.transparent,
+                  overlayColor: Colors.black26,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: (){},
+                child: Text('Claim', style: TextStyle(color: Color(0xFF070123), fontSize: 12, fontWeight: FontWeight.w700))
+              ),
+            ),
+            SizedBox(width: 20)
+          ],
+        )
+      ),
     );
   }
   Widget BoxMatches() {
     return Column(
+      spacing: 12,
       children: [
         Row(
           children: [
+            SizedBox(width: 16),
             Image.asset('assets/icons/icon_football.png', width: 16),
             SizedBox(width: 4),
-            Text('Featured matches', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700))
+            Text('Featured matches', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
+            Spacer(),
+            GestureDetector(
+              onTap: (){},
+              child: Row(
+                children: [
+                  Text('More', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w700)),
+                  SizedBox(width: 2),
+                  Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70, size: 12)
+                ],
+              )
+            ),
+            SizedBox(width: 16),
           ]
         ),
-        Container()
+        LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                spacing: 12,
+                children: List.generate(3, (index) => GestureDetector(
+                  onTap: () => {},
+                  child: Container(
+                    width: 252,
+                    height: 146,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF12072F),
+                      border: Border.all(color: Color(0xFF38295E), width: 2),
+                      borderRadius: BorderRadius.circular(8)
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 172,
+                          height: 22,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF38295E),
+                            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(24), bottomRight: Radius.circular(24))
+                          ),
+                          child: Text('UEFA Champions League', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
+                        ),
+                        SizedBox(height: 8),
+                        Text('Tomorrow,3:00 PM', style: TextStyle(color: Colors.white30, fontSize: 11, fontWeight: FontWeight.w400)),
+                        Spacer(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          spacing: 20,
+                          children: [
+                            Column(
+                              children: [
+                                Image.asset('assets/icons/club/Atletico.png', width: 24),
+                                Text('ManCity', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
+                              ],
+                            ),
+                            Image.asset('assets/icons/VS.png', width: 40),
+                            Column(
+                              children: [
+                                Image.asset('assets/icons/club/Atletico.png', width: 24),
+                                Text('ManCity', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 28)
+                      ],
+                    ),
+                  ),
+                ))
+              )
+            );
+          }
+        )
       ]
     );
   }

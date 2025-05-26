@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 
 Widget BoxChallenge() {
   return Column(
+    spacing: 12,
     children: [
       Row(
         children: [
@@ -15,7 +16,6 @@ Widget BoxChallenge() {
           Text('Challenge', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700))
         ]
       ),
-      SizedBox(height: 12),
       Column(
         spacing: 8,
         children: [

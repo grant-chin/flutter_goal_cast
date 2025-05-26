@@ -227,7 +227,8 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
     _onSpin();
   }
   // 游戏结束
-  _gameOver() {
+  _gameOver() async {
+    await Future.delayed(Duration(milliseconds: 1000));
     showDialog(
       context: context,
       useSafeArea: false,
@@ -241,7 +242,13 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
     );
     Future.delayed(Duration(milliseconds: 2000), () {
       Get.back();
-      Utils.gameSuccess(context, point: 400, xp: 4, callback: _resetGame);
+      if (_leftScore > _rightScore) {
+        Utils.gameSuccess(context, callback: _resetGame);
+      } else if (_rightScore > _leftScore) {
+        Utils.gameFailed(context, callback: _resetGame);
+      } else {
+        Utils.gameDraw(context, callback: _resetGame);
+      }
     });
   }
 
