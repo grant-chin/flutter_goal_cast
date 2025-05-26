@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/common/utils.dart';
 import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/challenge.dart';
 import 'package:get/get.dart';
@@ -72,7 +73,10 @@ class HomePageState extends State<HomePage> {
             ],
           ),
           Spacer(),
-          Image.asset('assets/icons/box_task.png', height: 40)
+          GestureDetector(
+            onTap: () => Utils.showDailyTasks(context),
+            child: Image.asset('assets/icons/box_task.png', height: 40),
+          )
         ],
       ),
     );

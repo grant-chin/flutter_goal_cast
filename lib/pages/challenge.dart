@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/common/utils.dart';
 import 'package:flutter_goal_cast/wedget/challenge.dart';
 import 'package:get/get.dart';
 
@@ -103,7 +104,7 @@ class ChallengePageState extends State<ChallengePage> {
                 overlayColor: Colors.black26,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: (){},
+              onPressed: () => Utils.showDailyTasks(context),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

@@ -88,7 +88,6 @@ class MinesPageState extends State<MinesPage> {
               child: Image.asset('assets/icons/info.png', width: 16)
             ),
           )
-          
         ],
       ),
     );

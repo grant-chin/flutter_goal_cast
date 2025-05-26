@@ -74,7 +74,7 @@ class Utils {
         onWillPop: () async => false,
         child: Material(
           color: Colors.black38,
-          child: BounceIn(child: Stack(
+          child: Stack(
             alignment: Alignment.center,
             children: [
               Positioned(child: BounceIn(child: Container(
@@ -115,8 +115,154 @@ class Utils {
                 ),
               )))
             ],
-          )),
+          )
         )
+      )
+    );
+  }
+
+  static void showDailyTasks(context) {
+    showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (_) => Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FadeInUpBig(
+            duration: Duration(milliseconds: 200),
+            child: Container(
+              height: 570,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: Color(0xFF12072F),
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16))
+              ),
+              child: Column(
+                children: [
+                  Image.asset('assets/images/bg/dialog_point.png'),
+                  Image.asset('assets/images/bg/daily_tasks.png'),
+                  SizedBox(height: 16),
+                  Container(
+                    width: MediaQuery.of(context).size.width - 32,
+                    height: 76,
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white30),
+                      borderRadius: BorderRadius.circular(16)
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Complete a forecast', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+                            Row(
+                              children: [
+                                Text('+200', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
+                                SizedBox(width: 4),
+                                Image.asset('assets/icons/bets.png', width: 16)
+                              ],
+                            )
+                          ],
+                        ),
+                        Container(
+                          width: 66,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Color(0xFFBE71FD), Color(0xFF8033D1)],
+                              stops: [0, 1], // 调整渐变范围
+                            ),
+                            borderRadius: BorderRadius.circular(8)
+                          ),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.all(0),
+                              foregroundColor: Colors.white,
+                              disabledForegroundColor: Colors.white60,
+                              backgroundColor: Colors.transparent,
+                              disabledBackgroundColor: Color(0xFF38295E),
+                              shadowColor: Colors.transparent,
+                              overlayColor: Colors.black26,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            onPressed: (){},
+                            child: Text('Claim', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
+                          )
+                        )
+                        // SizedBox(
+                        //   width: 49,
+                        //   height: 30,
+                        //   child: ElevatedButton(
+                        //     style: ElevatedButton.styleFrom(
+                        //       padding: EdgeInsets.all(0),
+                        //       foregroundColor: Colors.white,
+                        //       backgroundColor: Color(0xFF38295E),
+                        //       shadowColor: Colors.transparent,
+                        //       overlayColor: Colors.white10,
+                        //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        //     ),
+                        //     onPressed: (){},
+                        //     child: Text('Go', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
+                        //   ),
+                        // )
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Container(
+                    width: MediaQuery.of(context).size.width - 32,
+                    height: 76,
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white30),
+                      borderRadius: BorderRadius.circular(16)
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Participate in a competition', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+                            Row(
+                              children: [
+                                Text('+50', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
+                                SizedBox(width: 4),
+                                Image.asset('assets/icons/exp.png', width: 16)
+                              ],
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          width: 49,
+                          height: 30,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.all(0),
+                              foregroundColor: Colors.white,
+                              backgroundColor: Color(0xFF38295E),
+                              shadowColor: Colors.transparent,
+                              overlayColor: Colors.white10,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            onPressed: (){},
+                            child: Text('Go', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
+          )
+        ],
       )
     );
   }
