@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/pages/detail/invited.dart';
+import 'package:flutter_goal_cast/pages/detail/manage_player.dart';
+import 'package:flutter_goal_cast/pages/detail/manage_team.dart';
+import 'package:flutter_goal_cast/pages/detail/matches.dart';
 import 'package:flutter_goal_cast/pages/games/kick_clash.dart';
 import 'package:flutter_goal_cast/pages/games/shot_daily.dart';
 import 'package:get/get.dart';
@@ -38,6 +42,11 @@ class MainApp extends StatelessWidget {
         nextScreen: const IndexPage(),
       ),
       getPages: [
+        GetPage(name: '/matches', page: () => MatchesPage()),
+        GetPage(name: '/invited', page: () => InvitedPage()),
+        GetPage(name: '/team_manage', page: () => TeamMPage()),
+        GetPage(name: '/player_manage', page: () => PlayerMPage()),
+
         GetPage(name: '/kick_clash', page: () => KickClash()),
         GetPage(name: '/shot_daily', page: () => ShotDaily()),
       ],

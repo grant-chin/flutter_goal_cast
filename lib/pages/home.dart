@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/challenge.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -160,6 +161,7 @@ class HomePageState extends State<HomePage> {
       ),
     );
   }
+  
   Widget BoxMatches() {
     return Column(
       spacing: 12,
@@ -172,7 +174,7 @@ class HomePageState extends State<HomePage> {
             Text('Featured matches', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
             Spacer(),
             GestureDetector(
-              onTap: (){},
+              onTap: () => Get.toNamed('/matches'),
               child: Row(
                 children: [
                   Text('More', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w700)),
@@ -192,7 +194,7 @@ class HomePageState extends State<HomePage> {
               child: Row(
                 spacing: 12,
                 children: List.generate(3, (index) => GestureDetector(
-                  onTap: () => {},
+                  onTap: () => Get.toNamed('/matches'),
                   child: Container(
                     width: 252,
                     height: 146,
@@ -201,44 +203,66 @@ class HomePageState extends State<HomePage> {
                       border: Border.all(color: Color(0xFF38295E), width: 2),
                       borderRadius: BorderRadius.circular(8)
                     ),
-                    child: Column(
+                    child: Stack(
+                      alignment: Alignment.center,
                       children: [
-                        Container(
-                          width: 172,
-                          height: 22,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF38295E),
-                            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(24), bottomRight: Radius.circular(24))
-                          ),
-                          child: Text('UEFA Champions League', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
+                        Positioned(
+                          top: 80,
+                          child: Container(
+                            width: 158,
+                            height: 158,
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color.fromRGBO(190, 113, 253, 0.24),
+                                  offset: Offset(0, 0),
+                                  blurRadius: 60.3,
+                                )
+                              ],
+                              borderRadius: BorderRadius.circular(158)
+                            ),
+                          )
                         ),
-                        SizedBox(height: 8),
-                        Text('Tomorrow,3:00 PM', style: TextStyle(color: Colors.white30, fontSize: 11, fontWeight: FontWeight.w400)),
-                        Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          spacing: 20,
+                        Column(
                           children: [
-                            Column(
+                            Container(
+                              width: 172,
+                              height: 22,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Color(0xFF38295E),
+                                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(24), bottomRight: Radius.circular(24))
+                              ),
+                              child: Text('UEFA Champions League', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
+                            ),
+                            SizedBox(height: 8),
+                            Text('Tomorrow,3:00 PM', style: TextStyle(color: Colors.white30, fontSize: 11, fontWeight: FontWeight.w400)),
+                            Spacer(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              spacing: 20,
                               children: [
-                                Image.asset('assets/icons/club/Atletico.png', width: 24),
-                                Text('ManCity', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
+                                Column(
+                                  children: [
+                                    Image.asset('assets/icons/club/Atletico.png', width: 24),
+                                    Text('ManCity', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
+                                  ],
+                                ),
+                                Image.asset('assets/icons/VS.png', width: 40),
+                                Column(
+                                  children: [
+                                    Image.asset('assets/icons/club/Atletico.png', width: 24),
+                                    Text('ManCity', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
+                                  ],
+                                ),
                               ],
                             ),
-                            Image.asset('assets/icons/VS.png', width: 40),
-                            Column(
-                              children: [
-                                Image.asset('assets/icons/club/Atletico.png', width: 24),
-                                Text('ManCity', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
-                              ],
-                            ),
+                            SizedBox(height: 28)
                           ],
                         ),
-                        SizedBox(height: 28)
                       ],
-                    ),
+                    )
                   ),
                 ))
               )

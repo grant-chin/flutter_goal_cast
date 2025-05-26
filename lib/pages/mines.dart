@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/wedget/soccer_item.dart';
 
 class MinesPage extends StatefulWidget {
   const MinesPage({super.key});
@@ -124,7 +125,8 @@ class MinesPageState extends State<MinesPage> {
             spacing: 24,
             children: [
               AvailableRewards(),
-              Soccer()
+              Soccer(),
+              SizedBox(height: MediaQuery.of(context).padding.bottom + 64)
             ]
           ),
         )
@@ -227,35 +229,31 @@ class MinesPageState extends State<MinesPage> {
             return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  Row(
-                    spacing: 12,
-                    children: List.generate(_tabSoccer.length, (index) => GestureDetector(
-                      onTap: () => setState(() => _curTabSoccer = index),
-                      child: Container(
-                        height: 30,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: _curTabSoccer == index ? [Color(0xFFBE71FD), Color(0xFF8033D1)] : [Color(0xFF170C34), Color(0xFF170C34)],
-                            stops: [0, 1], // 调整渐变范围
-                          ),
-                          borderRadius: BorderRadius.circular(8)
-                        ),
-                        child: Text(_tabSoccer[index], style: TextStyle(color: _curTabSoccer == index ? Colors.white : Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
+              child: Row(
+                spacing: 12,
+                children: List.generate(_tabSoccer.length, (index) => GestureDetector(
+                  onTap: () => setState(() => _curTabSoccer = index),
+                  child: Container(
+                    height: 30,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: _curTabSoccer == index ? [Color(0xFFBE71FD), Color(0xFF8033D1)] : [Color(0xFF170C34), Color(0xFF170C34)],
+                        stops: [0, 1], // 调整渐变范围
                       ),
-                    ))
+                      borderRadius: BorderRadius.circular(8)
+                    ),
+                    child: Text(_tabSoccer[index], style: TextStyle(color: _curTabSoccer == index ? Colors.white : Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
                   ),
-
-                ],
+                ))
               )
             );
           }
-        )
+        ),
+        Column(spacing: 8, children: List.generate(4, (index) => SoccerItem()))
       ]
     );
   }

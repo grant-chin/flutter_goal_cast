@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -23,8 +24,14 @@ class MapPageState extends State<MapPage> {
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
-                  Image.asset('assets/images/map/manage_team.png', width: MediaQuery.of(context).size.width / 2 - 16),
-                  Image.asset('assets/images/map/manage_players.png', width: MediaQuery.of(context).size.width / 2 - 16),
+                  GestureDetector(
+                    onTap: () => Get.toNamed('/team_manage'),
+                    child: Image.asset('assets/images/map/manage_team.png', width: MediaQuery.of(context).size.width / 2 - 16),
+                  ),
+                  GestureDetector(
+                    onTap: () => Get.toNamed('/player_manage'),
+                    child: Image.asset('assets/images/map/manage_players.png', width: MediaQuery.of(context).size.width / 2 - 16),
+                  ),
                 ],
               ),
             ),

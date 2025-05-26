@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_goal_cast/wedget/challenge.dart';
+import 'package:get/get.dart';
 
 class ChallengePage extends StatefulWidget {
   const ChallengePage({super.key});
@@ -141,7 +142,7 @@ class ChallengePageState extends State<ChallengePage> {
                 overlayColor: Colors.black26,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: (){},
+              onPressed: () => Get.toNamed('/invited'),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
