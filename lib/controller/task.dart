@@ -43,7 +43,6 @@ class TaskController extends GetxController {
   static onClaimDaily() {
     String now = formater.format(DateTime.now());
     SharePref.setString('claimedTime_daily', now);
-    UserController.increasePoints(1000);
     initTask();
   }
 }

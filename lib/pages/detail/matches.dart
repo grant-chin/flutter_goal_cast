@@ -2,6 +2,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/controller/match.dart';
 import 'package:flutter_goal_cast/wedget/detail_navbar.dart';
 import 'package:flutter_goal_cast/wedget/soccer_item.dart';
 
@@ -13,6 +14,7 @@ class MatchesPage extends StatefulWidget {
 }
 
 class MatchesPageState extends State<MatchesPage> {
+  List get _matchList => MatchController.matchList;
   final List _tabs = ['Today', 'Upcoming'];
   int _curTab = 0;
   final List _tabSoccer = ['All Matches', 'UEFA Champions League', 'UEFA Europa League'];
@@ -180,7 +182,7 @@ class MatchesPageState extends State<MatchesPage> {
           ]
         ),
         SoccerTab(),
-        Column(spacing: 8, children: List.generate(4, (index) => SoccerItem()))
+        Column(spacing: 8, children: List.generate(_matchList.length, (index) => SoccerItem(context, item: _matchList[index])))
       ]
     );
   }

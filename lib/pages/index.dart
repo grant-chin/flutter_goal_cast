@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_goal_cast/common/utils.dart';
 import 'package:flutter_goal_cast/controller/game.dart';
+import 'package:flutter_goal_cast/controller/match.dart';
 import 'package:flutter_goal_cast/controller/task.dart';
 import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/pages/home.dart';
@@ -25,6 +26,7 @@ class IndexPageState extends State<IndexPage> {
   @override
   void initState() {
     super.initState();
+    MatchController.init();
     UserController.init();
     if (UserController.first.value != false) {
       Utils.welcomeBonus(context);

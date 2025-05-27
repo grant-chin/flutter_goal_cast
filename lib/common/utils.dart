@@ -101,6 +101,7 @@ class Utils {
     );
   }
 
+  // 全局公共弹窗
   static void globalDialog(context, { required String title, required String text, point, xp, callback }) {
     List<Widget> content = [];
     if (point != null) {
@@ -178,7 +179,7 @@ class Utils {
       )
     );
   }
-
+  // 每日奖励弹窗
   static void showDailyTasks(context) {
     showDialog(
       context: context,
@@ -227,6 +228,66 @@ class Utils {
           )
         ],
       )
+    );
+  }
+  // 预测弹窗
+  static void forcastDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (_) => Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Material(
+              color: Colors.transparent,
+              child: ZoomIn(
+                duration: Duration(milliseconds: 200),
+                child: Container(
+                  height: 386,
+                  width: MediaQuery.of(context).size.width - 16,
+                  decoration: BoxDecoration(
+                    color: Color(0xFF170C34),
+                    borderRadius: BorderRadius.circular(8)
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 52,
+                        width: MediaQuery.of(context).size.width,
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: Color(0xFF01FFF7),
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8))
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(width: 24),
+                            Text('Pick & Play', style: TextStyle(color: Color(0xFF070123), fontSize: 16, fontWeight: FontWeight.w700)),
+                            GestureDetector(
+                              onTap: () => Get.back(),
+                              child: Icon(Icons.close),
+                            )
+                          ],
+                        )
+                      ),
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text('Current level', style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w400)),
+                              Text('Balance', style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w400)),
+                            ],
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                )
+              )
+            )
+          ],
+        ),
     );
   }
 }

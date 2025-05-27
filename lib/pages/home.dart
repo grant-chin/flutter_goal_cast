@@ -2,10 +2,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_goal_cast/common/utils.dart';
+import 'package:flutter_goal_cast/controller/match.dart';
 import 'package:flutter_goal_cast/controller/task.dart';
 import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/challenge.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Response;
+import 'package:intl/intl.dart';
+
+var formater = DateFormat('yyyy-MM-dd');
+var timeFormater = DateFormat('yyyy-MM-dd HH:mm');
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,6 +24,11 @@ class HomePageState extends State<HomePage> {
   String get _nickname => UserController.nickname.value;
   String get _point => UserController.pointStr.value;
   bool get _dailyClaimed => TaskController.dailyClaimed.value;
+  List get _matchList => MatchController.matchList;
+
+  _timeFormatter(date) {
+    return timeFormater.format(DateTime.fromMillisecondsSinceEpoch(date));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,90 +221,99 @@ class HomePageState extends State<HomePage> {
         ),
         LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
-            return SingleChildScrollView(
+            return Obx(() => SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
+              child: _matchList.isNotEmpty ? Row(
                 spacing: 12,
-                children: List.generate(3, (index) => GestureDetector(
-                  onTap: () => Get.toNamed('/matches'),
-                  child: Container(
-                    width: 252,
-                    height: 146,
-                    decoration: BoxDecoration(
-                      color: Color(0xFF12072F),
-                      border: Border.all(color: Color(0xFF38295E), width: 2),
-                      borderRadius: BorderRadius.circular(8)
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Positioned(
-                          top: 80,
-                          child: Container(
-                            width: 158,
-                            height: 158,
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Color.fromRGBO(190, 113, 253, 0.24),
-                                  offset: Offset(0, 0),
-                                  blurRadius: 60.3,
-                                )
-                              ],
-                              borderRadius: BorderRadius.circular(158)
-                            ),
-                          )
-                        ),
-                        Column(
-                          children: [
-                            Container(
-                              width: 172,
-                              height: 22,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: Color(0xFF38295E),
-                                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(24), bottomRight: Radius.circular(24))
-                              ),
-                              child: Text('UEFA Champions League', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
-                            ),
-                            SizedBox(height: 8),
-                            Text('Tomorrow,3:00 PM', style: TextStyle(color: Colors.white30, fontSize: 11, fontWeight: FontWeight.w400)),
-                            Spacer(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              spacing: 24,
-                              children: [
-                                Column(
-                                  spacing: 10,
-                                  children: [
-                                    Image.asset('assets/icons/club/manCity.png', width: 24),
-                                    Text('ManCity', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
-                                  ],
-                                ),
-                                Image.asset('assets/icons/VS.png', width: 40),
-                                Column(
-                                  spacing: 10,
-                                  children: [
-                                    Image.asset('assets/icons/club/Atletico.png', width: 24),
-                                    Text('ManCity', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 28)
-                          ],
-                        ),
-                      ],
-                    )
-                  ),
-                ))
+                children: List.generate(_matchList.length > 3 ? 3 : _matchList.length, (index) => MatchItem(index))
+              ) : Container(
+                height: 60,
+                alignment: Alignment.center,
+                child: Text('No Data', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
               )
-            );
+            ));
           }
         )
       ]
+    );
+  }
+  Widget MatchItem(index) {
+    return GestureDetector(
+      onTap: () => Get.toNamed('/matches'),
+      child: Container(
+        width: 252,
+        height: 146,
+        decoration: BoxDecoration(
+          color: Color(0xFF12072F),
+          border: Border.all(color: Color(0xFF38295E), width: 2),
+          borderRadius: BorderRadius.circular(8)
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              top: 80,
+              child: Container(
+                width: 158,
+                height: 158,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromRGBO(190, 113, 253, 0.24),
+                      offset: Offset(0, 0),
+                      blurRadius: 60.3,
+                    )
+                  ],
+                  borderRadius: BorderRadius.circular(158)
+                ),
+              )
+            ),
+            Column(
+              children: [
+                Container(
+                  width: 172,
+                  height: 22,
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Color(0xFF38295E),
+                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(24), bottomRight: Radius.circular(24))
+                  ),
+                  child: Obx(() => Text(_matchList[index]['name'], style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500), textAlign: TextAlign.center, overflow: TextOverflow.ellipsis))
+                ),
+                SizedBox(height: 8),
+                Obx(() => Text('${_timeFormatter(_matchList[index]['matchTime'] * 1000)}', style: TextStyle(color: Colors.white30, fontSize: 11, fontWeight: FontWeight.w400))),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 12,
+                  children: [
+                    ClubBox(id: _matchList[index]['homeId'], name: _matchList[index]['homeName']),
+                    Image.asset('assets/icons/VS.png', width: 40),
+                    ClubBox(id: _matchList[index]['awayId'], name: _matchList[index]['awayName']),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        )
+      ),
+    );
+  }
+  Widget ClubBox({id, name}) {
+    return Container(
+      width: 74,
+      alignment: Alignment.center,
+      child: Column(
+        spacing: 10,
+        children: [
+          Image.network('https://images.fotmob.com/image_resources/logo/teamlogo/$id.png', width: 24),
+          Text(name, style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500), textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis)
+        ],
+      ),
     );
   }
 }

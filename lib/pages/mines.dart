@@ -1,9 +1,10 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/controller/match.dart';
 import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/soccer_item.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Response;
 
 class MinesPage extends StatefulWidget {
   const MinesPage({super.key});
@@ -13,6 +14,7 @@ class MinesPage extends StatefulWidget {
 }
 
 class MinesPageState extends State<MinesPage> {
+  List get _matchList => MatchController.matchList;
   int get _level => UserController.level.value;
   String get _nickname => UserController.nickname.value;
   String get _points => UserController.pointStr.value;
@@ -270,7 +272,7 @@ class MinesPageState extends State<MinesPage> {
             );
           }
         ),
-        Column(spacing: 8, children: List.generate(4, (index) => SoccerItem()))
+        Column(spacing: 8, children: List.generate(_matchList.length, (index) => SoccerItem(context, item: _matchList[index])))
       ]
     );
   }
