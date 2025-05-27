@@ -1,9 +1,10 @@
-// ignore_for_file: non_constant_identifier_names, type_literal_in_constant_pattern
+// ignore_for_file: non_constant_identifier_names, type_literal_in_constant_pattern, use_build_context_synchronously
 
 import 'dart:math';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/common/utils.dart';
 import 'package:flutter_goal_cast/wedget/primary_btn.dart';
 import 'package:get/get.dart';
 
@@ -22,6 +23,7 @@ class ShotDailyState extends State<ShotDaily> with SingleTickerProviderStateMixi
   late AnimationController _animationController;
   final double _itemHeight = 80;
   bool runing = false;
+  bool _runable = true;
   int _endingCount = 0;
 
   final List _combinations = [
@@ -71,12 +73,21 @@ class ShotDailyState extends State<ShotDaily> with SingleTickerProviderStateMixi
     });
   }
 
+  _reset() {
+    setState(() {
+      _bingoIndex = -1;
+    });
+  }
+
   // 开始抽奖
   void _startSpin() {
     if (runing) return;
     _animationController.reset();
-    setState(() => runing = true);
-    setState(() => _bingoIndex = -1);
+    setState(() {
+      _runable = false;
+      runing = true;
+      _bingoIndex = -1;
+    });
 
     _scrollControllers.asMap().forEach((index, controller) {
       controller.animateTo(
@@ -129,8 +140,15 @@ class ShotDailyState extends State<ShotDaily> with SingleTickerProviderStateMixi
         bingoIndex = 5;
       }
     }
-    setState(() {
-      _bingoIndex = bingoIndex;
+    setState(() => _bingoIndex = bingoIndex);
+    
+    Future.delayed(Duration(seconds: 2), () {
+      if (_bingoIndex == -1) {
+        Utils.shotFailed(context, callback: _reset);
+      } else {
+        Utils.shotSuccess(context, point: _combinations[_bingoIndex]['reword'], callback: _reset);
+      }
+      setState(() => _runable = true);
     });
   }
   Map _countRanks() {
@@ -157,7 +175,7 @@ class ShotDailyState extends State<ShotDaily> with SingleTickerProviderStateMixi
             MachineBox(),
             ConbinationBox(),
             SizedBox(height: 16),
-            PrimaryBtn(text: 'Free shoot (3)', width: MediaQuery.of(context).size.width - 48, func: _startSpin)
+            PrimaryBtn(text: 'Free shoot (3)', width: MediaQuery.of(context).size.width - 48, func: _runable ? _startSpin : null)
           ],
         ),
       ),

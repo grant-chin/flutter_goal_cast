@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-Widget PrimaryBtn({ double? width, required String text, func }) {
+Widget PrimaryBtn({ double? width, required String text, child, func }) {
   return Container(
     width: width,
     height: 54,
@@ -27,7 +27,7 @@ Widget PrimaryBtn({ double? width, required String text, func }) {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       onPressed: func,
-      child: Text(text, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700))
+      child: child ?? Text(text, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700))
     )
   );
 }

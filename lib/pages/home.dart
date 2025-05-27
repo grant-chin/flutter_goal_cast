@@ -14,6 +14,10 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  int get _level => UserController.level.value;
+  String get _nickname => UserController.nickname.value;
+  String get _point => UserController.pointStr.value;
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -39,9 +43,22 @@ class HomePageState extends State<HomePage> {
           Container(
             width: 48,
             height: 48,
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               image: DecorationImage(image: AssetImage('assets/images/avator.png')),
               borderRadius: BorderRadius.circular(8)
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  width: 48,
+                  height: 14,
+                  alignment: Alignment.center,
+                  color: Color.fromRGBO(18, 7, 47, 0.64),
+                  child: Obx(() => Text('Lv.$_level', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)))
+                )
+              ],
             ),
           ),
           SizedBox(width: 8),
@@ -49,7 +66,7 @@ class HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Thomas021', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
+              Text(_nickname, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
               Container(
                 padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                 decoration: BoxDecoration(
@@ -66,7 +83,7 @@ class HomePageState extends State<HomePage> {
                   children: [
                     Image.asset('assets/icons/bets.png', width: 16),
                     SizedBox(width: 4),
-                    Text('1000', style: TextStyle(color: Colors.white, fontSize: 13))
+                    Obx(() => Text(_point, style: TextStyle(color: Colors.white, fontSize: 13)))
                   ],
                 )
               )
@@ -112,57 +129,54 @@ class HomePageState extends State<HomePage> {
 
   // 首发奖励/每日奖励
   Widget DailyReward() {
-    return Offstage(
-      offstage: UserController.first.value != true,
-      child: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage('assets/icons/box_everyday.png'))
-        ),
-        child: Row(
-          children: [
-            SizedBox(width: 96),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Welcome Bonus', style: TextStyle(color: Color(0xFF01FFF7), fontSize: 14, fontWeight: FontWeight.w700, shadows: [
-                  Shadow(
-                    color: Color(0xFF170C34), // 阴影颜色
-                    offset: Offset(1, 1), // 阴影偏移量 (水平, 垂直)
-                    blurRadius: 0, // 阴影模糊程度
-                  ),
-                ])),
-                SizedBox(height: 2),
-                Row(
-                  children: [
-                    Text('Up to 1000', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500)),
-                    SizedBox(width: 4),
-                    Image.asset('assets/icons/bets.png', width: 16)
-                  ],
-                )
-              ],
-            ),
-            Spacer(),
-            SizedBox(
-              height: 30,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(0),
-                  foregroundColor: Colors.white,
-                  backgroundColor: Color(0xFF01FFF7),
-                  shadowColor: Colors.transparent,
-                  overlayColor: Colors.black26,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                onPressed: (){},
-                child: Text('Claim', style: TextStyle(color: Color(0xFF070123), fontSize: 12, fontWeight: FontWeight.w700))
-              ),
-            ),
-            SizedBox(width: 20)
-          ],
-        )
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+        image: DecorationImage(image: AssetImage('assets/icons/box_everyday.png'))
       ),
+      child: Row(
+        children: [
+          SizedBox(width: 110),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Daily bonus', style: TextStyle(color: Color(0xFF01FFF7), fontSize: 14, fontWeight: FontWeight.w700, shadows: [
+                Shadow(
+                  color: Color(0xFF170C34), // 阴影颜色
+                  offset: Offset(1, 1), // 阴影偏移量 (水平, 垂直)
+                  blurRadius: 0, // 阴影模糊程度
+                ),
+              ])),
+              SizedBox(height: 2),
+              Row(
+                children: [
+                  Text('Up to 1000', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500)),
+                  SizedBox(width: 4),
+                  Image.asset('assets/icons/bets.png', width: 16)
+                ],
+              )
+            ],
+          ),
+          Spacer(),
+          SizedBox(
+            height: 30,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.all(0),
+                foregroundColor: Colors.white,
+                backgroundColor: Color(0xFF01FFF7),
+                shadowColor: Colors.transparent,
+                overlayColor: Colors.black26,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: (){},
+              child: Text('Claim', style: TextStyle(color: Color(0xFF070123), fontSize: 12, fontWeight: FontWeight.w700))
+            ),
+          ),
+          SizedBox(width: 20)
+        ],
+      )
     );
   }
   
@@ -245,16 +259,18 @@ class HomePageState extends State<HomePage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
-                              spacing: 20,
+                              spacing: 24,
                               children: [
                                 Column(
+                                  spacing: 10,
                                   children: [
-                                    Image.asset('assets/icons/club/Atletico.png', width: 24),
+                                    Image.asset('assets/icons/club/manCity.png', width: 24),
                                     Text('ManCity', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
                                   ],
                                 ),
                                 Image.asset('assets/icons/VS.png', width: 40),
                                 Column(
+                                  spacing: 10,
                                   children: [
                                     Image.asset('assets/icons/club/Atletico.png', width: 24),
                                     Text('ManCity', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))

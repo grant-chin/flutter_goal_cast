@@ -1,6 +1,8 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/controller/user.dart';
+import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -11,6 +13,11 @@ class ProfilePage extends StatefulWidget {
 }
 
 class ProfilePageState extends State<ProfilePage> {
+  int get _level => UserController.level.value;
+  String get _nickname => UserController.nickname.value;
+  String get _point => UserController.pointStr.value;
+  int get _xp => UserController.xp.value;
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -45,10 +52,10 @@ class ProfilePageState extends State<ProfilePage> {
                           border: Border.all(color: Color(0xFF01FFF7)),
                           borderRadius: BorderRadius.circular(8)
                         ),
-                        child: Text('Lvl.1', style: TextStyle(color: Color(0xFF01FFF7), fontSize: 14, fontWeight: FontWeight.w500)),
+                        child: Obx(() => Text('Lvl.$_level', style: TextStyle(color: Color(0xFF01FFF7), fontSize: 14, fontWeight: FontWeight.w500))),
                       ),
                       SizedBox(height: 8),
-                      Text('Thomas021', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500))
+                      Obx(() => Text(_nickname, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500)))
                     ],
                   )
                 ),
@@ -66,7 +73,7 @@ class ProfilePageState extends State<ProfilePage> {
                         children: [
                           Image.asset('assets/icons/bets.png', width: 32),
                           SizedBox(height: 4),
-                          Text('12,000', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),)
+                          Obx(() => Text(_point, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)))
                         ],
                       ),
                     )),
@@ -83,7 +90,7 @@ class ProfilePageState extends State<ProfilePage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text('223', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+                              Obx(() => Text('$_xp', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500))),
                               Text(' / 500', style: TextStyle(color: Colors.white30, fontSize: 16, fontWeight: FontWeight.w500)),
                             ]
                           )

@@ -5,6 +5,8 @@ import 'dart:math';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_goal_cast/common/utils.dart';
+import 'package:flutter_goal_cast/controller/game.dart';
+import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/primary_btn.dart';
 import 'package:get/get.dart';
 
@@ -16,6 +18,9 @@ class KickClash extends StatefulWidget {
 }
 
 class KickClashState extends State<KickClash> with SingleTickerProviderStateMixin {
+  int get _freeCount => GameController.freeKick.value;
+  int get _points => UserController.points.value;
+
   final List _type = [0, 5, 1, 4, 2, 3, 0, 5, 1, 2];
   bool _loading = false; // 开启对决动画
   bool _closeLoading = true; // 是否已关闭对决动画
@@ -108,16 +113,21 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
 
   // 开始游戏
   _startGame() async {
-    setState(() => _loading = true);
-    await Future.delayed(Duration(milliseconds: 4000));
-    setState(() {
-      _start = true;
-      _closeLoading = false;
-    });
-    await Future.delayed(Duration(milliseconds: 500));
-    setState(() => _loading = false);
-    await Future.delayed(Duration(milliseconds: 500));
-    _onNextRound();
+    if (_freeCount > 0) {
+      GameController.onFreeKick();
+    } else if (_points >= 200) {
+      UserController.decreasePoints(200);
+      setState(() => _loading = true);
+      await Future.delayed(Duration(milliseconds: 4000));
+      setState(() {
+        _start = true;
+        _closeLoading = false;
+      });
+      await Future.delayed(Duration(milliseconds: 500));
+      setState(() => _loading = false);
+      await Future.delayed(Duration(milliseconds: 500));
+      _onNextRound();
+    }
   }
 
   // 抽取次数
@@ -316,7 +326,19 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
         Positioned(top: 420 * scale, child: FadeInLeftBig(delay: Duration(seconds: 1), duration: Duration(seconds: 2), child: Spin(spins: 5, duration: Duration(seconds: 3), child: Image.asset('assets/images/game1/football.png', height: 48 * scale)))),
         Positioned(
           bottom: MediaQuery.of(context).padding.bottom + 32,
-          child: ElasticIn(delay: Duration(milliseconds: 500), child: PrimaryBtn(text: 'Free start (3)', width: MediaQuery.of(context).size.width - 32, func: _startGame))
+          child: ElasticIn(delay: Duration(milliseconds: 500), child: Obx(() => PrimaryBtn(
+            text: 'Free start ($_freeCount)',
+            width: MediaQuery.of(context).size.width - 32,
+            func: _startGame,
+            child: _freeCount > 0 ? null : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 4,
+              children: [
+                Text('Play for 200', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
+                Image.asset('assets/icons/bets.png', width: 16)
+              ]
+            ), 
+          )))
         ),
       ],
     );

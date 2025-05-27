@@ -2,6 +2,7 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/primary_btn.dart';
 import 'package:get/get.dart';
 
@@ -33,7 +34,9 @@ class Utils {
   // 第一次进入
   static void welcomeBonus(BuildContext context) {
     Future.delayed(Duration(milliseconds: 100), () {
-      globalDialog(context, title: 'Welcome Bouns', text: 'A new surprise awaits! Come back daily for free rewards.', point: 1000, callback: (){});
+      globalDialog(context, title: 'Welcome Bouns', text: 'A new surprise awaits! Come back daily for free rewards.', point: 1000, callback: () {
+        UserController.onFirstUse();
+      });
     });
   }
   // 游戏成功
@@ -48,8 +51,49 @@ class Utils {
   static void gameDraw(BuildContext context, { Function? callback }) {
     globalDialog(context, title: "It's a Draw!", text: 'A fair match — try again to take the lead!', point: 300, xp: 30, callback: callback);
   }
+  // 抽奖成功
+  static void shotSuccess(BuildContext context, { point, Function? callback }) {
+    globalDialog(context, title: "Goal! You Win!", text: 'What a strike!', point: point, callback: callback);
+  }
+  // 抽奖失败
+  static void shotFailed(BuildContext context, { Function? callback }) {
+    showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: Material(
+          color: Colors.black38,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: 322,
+                height: 296,
+                padding: EdgeInsets.only(bottom: 36),
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: AssetImage('assets/images/bg/bg_dialog_fail.png'))
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    PrimaryBtn(text: 'Try again', width: 290, func: (){
+                      Get.back();
+                      if (callback != null) {
+                        callback();
+                      }
+                    })
+                  ],
+                )
+              )
+            ],
+          )
+        )
+      )
+    );
+  }
 
-  static void globalDialog(context, { title, text, point, xp, callback }) {
+  static void globalDialog(context, { required String title, required String text, point, xp, callback }) {
     List<Widget> content = [];
     if (point != null) {
       content.add(Column(
@@ -88,7 +132,7 @@ class Utils {
                     Container(
                       height: 66,
                       alignment: Alignment.center,
-                      child: Text('Goal! You Win!', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700, fontFamily: 'Lexend'))
+                      child: Text(title, style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700, fontFamily: 'Lexend'))
                     ),
                     Container(
                       padding: EdgeInsets.symmetric(vertical: 44),
@@ -101,10 +145,16 @@ class Utils {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       margin: EdgeInsets.only(top: 16),
-                      child: Text('Your shot hits the net! Well done, champion!', style: TextStyle(color: Colors.white70), textAlign: TextAlign.center)
+                      child: Text(text, style: TextStyle(color: Colors.white70), textAlign: TextAlign.center)
                     ),
                     Spacer(),
                     PrimaryBtn(text: 'Claim', width: 290, func: (){
+                      if (point != null) {
+                        UserController.increasePoints(point);
+                      }
+                      if (xp != null) {
+                        UserController.increaseXP(xp);
+                      }
                       Get.back();
                       if (callback != null) {
                         callback();
