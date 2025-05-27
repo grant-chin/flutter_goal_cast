@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_goal_cast/controller/game.dart';
 import 'package:flutter_goal_cast/controller/task.dart';
 import 'package:flutter_goal_cast/controller/user.dart';
+import 'package:flutter_goal_cast/wedget/forecast.dart';
 import 'package:flutter_goal_cast/wedget/primary_btn.dart';
 import 'package:get/get.dart';
 
@@ -231,7 +232,7 @@ class Utils {
     );
   }
   // 预测弹窗
-  static void forcastDialog(BuildContext context) {
+  static void forcastDialog(BuildContext context, { required int id, required int type, required item }) {
     showDialog(
       context: context,
       useSafeArea: false,
@@ -271,16 +272,7 @@ class Utils {
                           ],
                         )
                       ),
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text('Current level', style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w400)),
-                              Text('Balance', style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w400)),
-                            ],
-                          )
-                        ],
-                      )
+                      Forecast(id: id, type: type, item: item)
                     ],
                   ),
                 )

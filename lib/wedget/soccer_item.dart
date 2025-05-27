@@ -88,7 +88,7 @@ Widget SoccerItem(context, { required item }) {
                 spacing: 16,
                 children: [
                   GestureDetector(
-                    onTap: () => Utils.forcastDialog(context),
+                    onTap: () => Utils.forcastDialog(context, id: item['id'], type: 1, item: item),
                     child: Container(
                       width: 102,
                       height: 32,
@@ -100,26 +100,32 @@ Widget SoccerItem(context, { required item }) {
                       child: Text('1', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
                     )
                   ),
-                  Container(
-                    width: 102,
-                    height: 32,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.white10,
-                      borderRadius: BorderRadius.circular(8)
-                    ),
-                    child: Text('Draw', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
+                  GestureDetector(
+                    onTap: () => Utils.forcastDialog(context, id: item['id'], type: 0, item: item),
+                    child: Container(
+                      width: 102,
+                      height: 32,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.white10,
+                        borderRadius: BorderRadius.circular(8)
+                      ),
+                      child: Text('Draw', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
+                    )
                   ),
-                  Container(
-                    width: 102,
-                    height: 32,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.white10,
-                      borderRadius: BorderRadius.circular(8)
-                    ),
-                    child: Text('2', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
-                  ),
+                  GestureDetector(
+                    onTap: () => Utils.forcastDialog(context, id: item['id'], type: 2, item: item),
+                    child: Container(
+                      width: 102,
+                      height: 32,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.white10,
+                        borderRadius: BorderRadius.circular(8)
+                      ),
+                      child: Text('2', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
+                    )
+                  )
                 ],
               ),
             ],

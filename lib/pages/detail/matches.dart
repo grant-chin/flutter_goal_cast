@@ -61,9 +61,9 @@ class MatchesPageState extends State<MatchesPage> {
     return Expanded(child: CustomScrollView(slivers: [
       SliverToBoxAdapter(
         child: Column(
-          spacing: 24,
           children: [
             BoxMatches(),
+            SizedBox(height: 24),
             Soccer(),
             SizedBox(height: MediaQuery.of(context).padding.bottom + 16)
           ]

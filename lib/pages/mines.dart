@@ -272,7 +272,7 @@ class MinesPageState extends State<MinesPage> {
             );
           }
         ),
-        Column(spacing: 8, children: List.generate(_matchList.length, (index) => SoccerItem(context, item: _matchList[index])))
+        Obx(() => Column(spacing: 8, children: List.generate(_matchList.length, (index) => SoccerItem(context, item: _matchList[index]))))
       ]
     );
   }

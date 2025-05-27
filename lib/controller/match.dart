@@ -9,6 +9,7 @@ var formater = DateFormat('yyyy-MM-dd');
 
 class MatchController extends GetxController {
   static final matchList = RxList(); // 比赛列表
+  static final forecastList = RxList(); // 预测列表
 
   // 初始化
   static init() async {

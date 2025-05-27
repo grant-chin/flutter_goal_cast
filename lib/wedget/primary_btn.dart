@@ -21,7 +21,7 @@ Widget PrimaryBtn({ double? width, required String text, child, func }) {
         foregroundColor: Colors.white,
         disabledForegroundColor: Colors.white60,
         backgroundColor: Colors.transparent,
-        disabledBackgroundColor: Color(0xFF170C34),
+        disabledBackgroundColor: Color(0xFF38295E),
         shadowColor: Colors.transparent,
         overlayColor: Colors.black26,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
