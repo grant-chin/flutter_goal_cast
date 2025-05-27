@@ -2,6 +2,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/controller/invited.dart';
 import 'package:flutter_goal_cast/wedget/detail_navbar.dart';
 
 class InvitedPage extends StatefulWidget {
@@ -12,6 +13,40 @@ class InvitedPage extends StatefulWidget {
 }
 
 class InvitedPageState extends State<InvitedPage> {
+  int get _invitedCount => InvitedController.invitedCount.value;
+  final List _invitedList = [
+    {
+      'count': 1,
+      'point': 100,
+      'xp': 10,
+    },
+    {
+      'count': 3,
+      'point': 200,
+      'xp': 30,
+    },
+    {
+      'count': 5,
+      'point': 300,
+      'xp': 50,
+    },
+    {
+      'count': 7,
+      'point': 400,
+      'xp': 70,
+    },
+    {
+      'count': 9,
+      'point': 500,
+      'xp': 90,
+    },
+    {
+      'count': 15,
+      'point': 600,
+      'xp': 150,
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -34,7 +69,7 @@ class InvitedPageState extends State<InvitedPage> {
           children: [
             Container(
               width: MediaQuery.of(context).size.width,
-              height: 140 + 10 * 108 + MediaQuery.of(context).padding.bottom + 16,
+              height: 140 + _invitedList.length * 108 + MediaQuery.of(context).padding.bottom + 16,
               padding: EdgeInsets.only(top: 16, left: 32),
               decoration: BoxDecoration(
                 image: DecorationImage(image: AssetImage('assets/images/bg/bg_invited.png'), alignment: Alignment.topCenter)
@@ -47,7 +82,7 @@ class InvitedPageState extends State<InvitedPage> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('10', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700, fontFamily: 'Lexend', height: 1)),
+                      Text('$_invitedCount', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700, fontFamily: 'Lexend', height: 1)),
                       Text('/times', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500)),
                     ],
                   ),
@@ -80,18 +115,7 @@ class InvitedPageState extends State<InvitedPage> {
               ),
               child: Column(
                 spacing: 16,
-                children: [
-                  InvitedBox(),
-                  InvitedBox(),
-                  InvitedBox(),
-                  InvitedBox(),
-                  InvitedBox(),
-                  InvitedBox(),
-                  InvitedBox(),
-                  InvitedBox(),
-                  InvitedBox(),
-                  InvitedBox(),
-                ],
+                children: List.generate(_invitedList.length, (index) => InvitedBox(index))
               ),
             ))
           ],
@@ -99,7 +123,7 @@ class InvitedPageState extends State<InvitedPage> {
       )
     ]));
   }
-  Widget InvitedBox() {
+  Widget InvitedBox(index) {
     return Container(
       height: 92,
       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
@@ -114,7 +138,7 @@ class InvitedPageState extends State<InvitedPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Share to 1 friends', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+              Text('Share to ${_invitedList[index]['count']} friends', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
               Row(
                 spacing: 8,
                 children: [
@@ -130,7 +154,7 @@ class InvitedPageState extends State<InvitedPage> {
                       children: [
                         Image.asset('assets/icons/bets.png', width: 16),
                         SizedBox(width: 4),
-                        Text('100', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
+                        Text('${_invitedList[index]['point']}', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
                       ],
                     ),
                   ),
@@ -144,9 +168,9 @@ class InvitedPageState extends State<InvitedPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset('assets/icons/bets.png', width: 16),
+                        Image.asset('assets/icons/exp.png', width: 16),
                         SizedBox(width: 4),
-                        Text('100', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
+                        Text('${_invitedList[index]['xp']}', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
                       ],
                     ),
                   ),
@@ -177,7 +201,7 @@ class InvitedPageState extends State<InvitedPage> {
                 overlayColor: Colors.black26,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: null,
+              onPressed: _invitedCount >= _invitedList[index]['count'] ? (){} : null,
               child: Text('Claim', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
             )
           )

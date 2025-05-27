@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_goal_cast/common/utils.dart';
+import 'package:flutter_goal_cast/controller/task.dart';
 import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/challenge.dart';
 import 'package:get/get.dart';
@@ -17,6 +18,7 @@ class HomePageState extends State<HomePage> {
   int get _level => UserController.level.value;
   String get _nickname => UserController.nickname.value;
   String get _point => UserController.pointStr.value;
+  bool get _dailyClaimed => TaskController.dailyClaimed.value;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +68,7 @@ class HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(_nickname, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
+              Obx(() => Text(_nickname, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500))),
               Container(
                 padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                 decoration: BoxDecoration(
@@ -131,12 +133,13 @@ class HomePageState extends State<HomePage> {
   Widget DailyReward() {
     return Container(
       height: 60,
+      padding: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         image: DecorationImage(image: AssetImage('assets/icons/box_everyday.png'))
       ),
       child: Row(
         children: [
-          SizedBox(width: 110),
+          SizedBox(width: 94),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,21 +162,23 @@ class HomePageState extends State<HomePage> {
             ],
           ),
           Spacer(),
-          SizedBox(
+          Obx(() => SizedBox(
             height: 30,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.all(0),
-                foregroundColor: Colors.white,
+                foregroundColor: Color(0xFF070123),
                 backgroundColor: Color(0xFF01FFF7),
+                disabledForegroundColor: Colors.white60,
+                disabledBackgroundColor: Color(0xFF38295E),
                 shadowColor: Colors.transparent,
                 overlayColor: Colors.black26,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: (){},
-              child: Text('Claim', style: TextStyle(color: Color(0xFF070123), fontSize: 12, fontWeight: FontWeight.w700))
+              onPressed: _dailyClaimed ? null : () => Utils.dailyBonus(context),
+              child: Text(_dailyClaimed ? 'Done' : 'Claim', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
             ),
-          ),
+          )),
           SizedBox(width: 20)
         ],
       )

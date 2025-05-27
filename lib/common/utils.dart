@@ -2,6 +2,8 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/controller/game.dart';
+import 'package:flutter_goal_cast/controller/task.dart';
 import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/primary_btn.dart';
 import 'package:get/get.dart';
@@ -37,6 +39,12 @@ class Utils {
       globalDialog(context, title: 'Welcome Bouns', text: 'A new surprise awaits! Come back daily for free rewards.', point: 1000, callback: () {
         UserController.onFirstUse();
       });
+    });
+  }
+  // 每日奖励
+  static void dailyBonus(BuildContext context) {
+    globalDialog(context, title: 'Daily Bouns', text: 'The passion burns on — your reward is here!', point: 1000, callback: () {
+      TaskController.onClaimDaily();
     });
   }
   // 游戏成功
@@ -181,7 +189,7 @@ class Utils {
           FadeInUpBig(
             duration: Duration(milliseconds: 200),
             child: Container(
-              height: 570,
+              height: 570 + MediaQuery.of(context).padding.bottom,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 color: Color(0xFF12072F),
@@ -200,68 +208,7 @@ class Utils {
                       border: Border.all(color: Colors.white30),
                       borderRadius: BorderRadius.circular(16)
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Complete a forecast', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
-                            Row(
-                              children: [
-                                Text('+200', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
-                                SizedBox(width: 4),
-                                Image.asset('assets/icons/bets.png', width: 16)
-                              ],
-                            )
-                          ],
-                        ),
-                        Container(
-                          width: 66,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Color(0xFFBE71FD), Color(0xFF8033D1)],
-                              stops: [0, 1], // 调整渐变范围
-                            ),
-                            borderRadius: BorderRadius.circular(8)
-                          ),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.all(0),
-                              foregroundColor: Colors.white,
-                              disabledForegroundColor: Colors.white60,
-                              backgroundColor: Colors.transparent,
-                              disabledBackgroundColor: Color(0xFF38295E),
-                              shadowColor: Colors.transparent,
-                              overlayColor: Colors.black26,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                            onPressed: (){},
-                            child: Text('Claim', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
-                          )
-                        )
-                        // SizedBox(
-                        //   width: 49,
-                        //   height: 30,
-                        //   child: ElevatedButton(
-                        //     style: ElevatedButton.styleFrom(
-                        //       padding: EdgeInsets.all(0),
-                        //       foregroundColor: Colors.white,
-                        //       backgroundColor: Color(0xFF38295E),
-                        //       shadowColor: Colors.transparent,
-                        //       overlayColor: Colors.white10,
-                        //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        //     ),
-                        //     onPressed: (){},
-                        //     child: Text('Go', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
-                        //   ),
-                        // )
-                      ],
-                    ),
+                    child: taskContent_1(context)
                   ),
                   SizedBox(height: 16),
                   Container(
@@ -272,41 +219,7 @@ class Utils {
                       border: Border.all(color: Colors.white30),
                       borderRadius: BorderRadius.circular(16)
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Participate in a competition', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
-                            Row(
-                              children: [
-                                Text('+50', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
-                                SizedBox(width: 4),
-                                Image.asset('assets/icons/exp.png', width: 16)
-                              ],
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          width: 49,
-                          height: 30,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.all(0),
-                              foregroundColor: Colors.white,
-                              backgroundColor: Color(0xFF38295E),
-                              shadowColor: Colors.transparent,
-                              overlayColor: Colors.white10,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            ),
-                            onPressed: (){},
-                            child: Text('Go', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
-                          ),
-                        )
-                      ],
-                    ),
+                    child: taskContent_2(context)
                   ),
                 ],
               ),
@@ -316,4 +229,110 @@ class Utils {
       )
     );
   }
+}
+
+Widget taskContent_1(context) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Complete a forecast', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+          Row(
+            children: [
+              Text('+200', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
+              SizedBox(width: 4),
+              Image.asset('assets/icons/bets.png', width: 16)
+            ],
+          )
+        ],
+      ),
+      true ? pBtn(
+        context,
+        point: 200,
+        claimed: TaskController.taskClaimed_1.value,
+        callback: TaskController.onClaimTask_1
+      ) : goBtn()
+    ],
+  );
+}
+Widget taskContent_2(context) {
+  return Obx(() => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Participate in a competition', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+          Row(
+            children: [
+              Text('+50', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
+              SizedBox(width: 4),
+              Image.asset('assets/icons/exp.png', width: 16)
+            ],
+          )
+        ],
+      ),
+      GameController.freeKick < 3 || GameController.freeShot < 3 ? pBtn(
+        context,
+        xp: 50,
+        claimed: TaskController.taskClaimed_2.value,
+        callback: TaskController.onClaimTask_2
+      ) : goBtn()
+    ],
+  ));
+}
+
+Widget pBtn(context, { point, xp, claimed, callback }) {
+  return Container(
+    width: 66,
+    height: 30,
+    padding: EdgeInsets.all(claimed ? 1 : 0),
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFFBE71FD), Color(0xFF8033D1)],
+        stops: [0, 1], // 调整渐变范围
+      ),
+      borderRadius: BorderRadius.circular(8)
+    ),
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.all(0),
+        foregroundColor: Colors.white,
+        disabledForegroundColor: Colors.white60,
+        backgroundColor: Colors.transparent,
+        disabledBackgroundColor: Color(0xFF38295E),
+        shadowColor: Colors.transparent,
+        overlayColor: Colors.black26,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      onPressed: claimed ? null : () {
+        Utils.globalDialog(context, title: "Mission complete!", text: 'The passion burns on — your reward is here!', point: point, xp: xp, callback: callback);
+      },
+      child: Text(claimed ? 'Done' : 'Claim', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
+    )
+  );
+}
+Widget goBtn() {
+  return SizedBox(
+    width: 49,
+    height: 30,
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.all(0),
+        foregroundColor: Colors.white,
+        backgroundColor: Color(0xFF38295E),
+        shadowColor: Colors.transparent,
+        overlayColor: Colors.white10,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      onPressed: (){},
+      child: Text('Go', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
+    ),
+  );
 }

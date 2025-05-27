@@ -1,7 +1,9 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/soccer_item.dart';
+import 'package:get/get.dart';
 
 class MinesPage extends StatefulWidget {
   const MinesPage({super.key});
@@ -11,6 +13,10 @@ class MinesPage extends StatefulWidget {
 }
 
 class MinesPageState extends State<MinesPage> {
+  int get _level => UserController.level.value;
+  String get _nickname => UserController.nickname.value;
+  String get _points => UserController.pointStr.value;
+  
   final List _tabs = ['Open', 'Closed', 'Collection'];
   int _curTab = 0;
   final List _tabSoccer = ['All Matches', 'UEFA Champions League', 'UEFA Europa League'];
@@ -46,9 +52,21 @@ class MinesPageState extends State<MinesPage> {
               image: DecorationImage(image: AssetImage('assets/images/avator.png')),
               borderRadius: BorderRadius.circular(8)
             ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  width: 48,
+                  height: 14,
+                  alignment: Alignment.center,
+                  color: Color.fromRGBO(18, 7, 47, 0.64),
+                  child: Obx(() => Text('Lv.$_level', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)))
+                )
+              ],
+            ),
           ),
           SizedBox(width: 8),
-          Text('Thomas021', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
+          Obx(() => Text(_nickname, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500))),
           Spacer(),
           Container(
             height: 32,
@@ -67,7 +85,7 @@ class MinesPageState extends State<MinesPage> {
               children: [
                 Image.asset('assets/icons/bets.png', width: 16),
                 SizedBox(width: 6),
-                Text('1000', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500))
+                Obx(() => Text(_points, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)))
               ],
             )
           ),

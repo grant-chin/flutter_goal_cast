@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_goal_cast/common/utils.dart';
+import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/challenge.dart';
 import 'package:get/get.dart';
 
@@ -13,6 +14,10 @@ class ChallengePage extends StatefulWidget {
 }
 
 class ChallengePageState extends State<ChallengePage> {
+  int get _level => UserController.level.value;
+  String get _nickname => UserController.nickname.value;
+  String get _points => UserController.pointStr.value;
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -52,9 +57,21 @@ class ChallengePageState extends State<ChallengePage> {
               image: DecorationImage(image: AssetImage('assets/images/avator.png')),
               borderRadius: BorderRadius.circular(8)
             ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  width: 48,
+                  height: 14,
+                  alignment: Alignment.center,
+                  color: Color.fromRGBO(18, 7, 47, 0.64),
+                  child: Obx(() => Text('Lv.$_level', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)))
+                )
+              ],
+            ),
           ),
           SizedBox(width: 8),
-          Text('Thomas021', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
+          Obx(() => Text(_nickname, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500))),
           Spacer(),
           Container(
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
@@ -72,7 +89,7 @@ class ChallengePageState extends State<ChallengePage> {
               children: [
                 Image.asset('assets/icons/bets.png', width: 16),
                 SizedBox(width: 4),
-                Text('1000', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500))
+                Obx(() => Text(_points, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)))
               ],
             )
           )
