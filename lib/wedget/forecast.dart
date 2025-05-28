@@ -1,12 +1,14 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/common/utils.dart';
+import 'package:flutter_goal_cast/controller/match.dart';
 import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/primary_btn.dart';
+import 'package:get/get.dart';
 
 class Forecast extends StatefulWidget {
-  const Forecast({super.key, required this.id, required this.type, required this.item});
-  final int id;
+  const Forecast({super.key, required this.type, required this.item});
   final int type;
   final Map item;
 
@@ -20,6 +22,18 @@ class ForecastState extends State<Forecast> {
   String get _pointStr => UserController.pointStr.value;
 
   int amount = 100;
+
+  _onConfirm() {
+    late int forecastId;
+    switch (widget.type) {
+      case 0: forecastId = 0; break;
+      case 1: forecastId = widget.item['homeId']; break;
+      case 2: forecastId = widget.item['awayId']; break;
+    }
+    MatchController.onForecast(id: widget.item['id'], forecastId: forecastId, amount: amount);
+    Utils.toast('Success! Check it out in Mines.');
+    Get.back();
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -85,6 +99,8 @@ class ForecastState extends State<Forecast> {
                   onTap: () {
                     if (amount > 100) {
                       setState(() => amount -= 100);
+                    } else {
+                      Utils.toast('Minimum amount is 100');
                     }
                   },
                   child: Container(
@@ -104,8 +120,10 @@ class ForecastState extends State<Forecast> {
                 Spacer(),
                 GestureDetector(
                   onTap: () {
-                    if (amount < _points) {
+                    if (amount <= _points - 100) {
                       setState(() => amount += 100);
+                    } else {
+                      Utils.toast('Insufficient balance');
                     }
                   },
                   child: Container(
@@ -135,7 +153,7 @@ class ForecastState extends State<Forecast> {
           PrimaryBtn(
             width: MediaQuery.of(context).size.width,
             text: 'Confirm',
-            func: (){}
+            func: _onConfirm
           )
         ],
       )

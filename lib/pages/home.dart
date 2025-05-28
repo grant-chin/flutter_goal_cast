@@ -27,7 +27,7 @@ class HomePageState extends State<HomePage> {
   List get _matchList => MatchController.matchList;
 
   _timeFormatter(date) {
-    return timeFormater.format(DateTime.fromMillisecondsSinceEpoch(date));
+    return timeFormater.format(DateTime.fromMillisecondsSinceEpoch(date).toUtc());
   }
 
   @override
@@ -206,16 +206,19 @@ class HomePageState extends State<HomePage> {
             SizedBox(width: 4),
             Text('Featured matches', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
             Spacer(),
-            GestureDetector(
-              onTap: () => Get.toNamed('/matches'),
-              child: Row(
-                children: [
-                  Text('More', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w700)),
-                  SizedBox(width: 2),
-                  Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70, size: 12)
-                ],
+            Obx(() => Offstage(
+              offstage: _matchList.isEmpty,
+              child: GestureDetector(
+                onTap: () => Get.toNamed('/matches'),
+                child: Row(
+                  children: [
+                    Text('More', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w700)),
+                    SizedBox(width: 2),
+                    Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70, size: 12)
+                  ],
+                )
               )
-            ),
+            )),
             SizedBox(width: 16),
           ]
         ),

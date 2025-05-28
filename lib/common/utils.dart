@@ -2,6 +2,8 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/controller/match.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_goal_cast/controller/game.dart';
 import 'package:flutter_goal_cast/controller/task.dart';
 import 'package:flutter_goal_cast/controller/user.dart';
@@ -10,27 +12,15 @@ import 'package:flutter_goal_cast/wedget/primary_btn.dart';
 import 'package:get/get.dart';
 
 class Utils {
-  static void toast(BuildContext context, { required message }) {
-    showDialog(
-      context: context,
-      useSafeArea: false,
-      builder: (_) => GestureDetector(
-        onTap: () {
-          Navigator.of(context).pop(); // 点击内容区域关闭
-        },
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Text(message, style: TextStyle(
-              decoration: TextDecoration.none,
-              color: Colors.white,
-              fontFamily: 'Lato',
-              fontSize: 24,
-              fontWeight: FontWeight.w700
-            ))
-          ],
-        ),
-      )
+  static void toast(message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.TOP,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Color(0xFF38295E),
+      textColor: Colors.white,
+      fontSize: 16.0
     );
   }
 
@@ -232,7 +222,8 @@ class Utils {
     );
   }
   // 预测弹窗
-  static void forcastDialog(BuildContext context, { required int id, required int type, required item }) {
+  static void forcastDialog(BuildContext context, { required int type, required item }) {
+    if (item['forecast'] == true) return;
     showDialog(
       context: context,
       useSafeArea: false,
@@ -272,7 +263,7 @@ class Utils {
                           ],
                         )
                       ),
-                      Forecast(id: id, type: type, item: item)
+                      Forecast(type: type, item: item)
                     ],
                   ),
                 )
@@ -302,12 +293,12 @@ Widget taskContent_1(context) {
           )
         ],
       ),
-      true ? pBtn(
+      MatchController.forecastToday.value ? pBtn(
         context,
         point: 200,
         claimed: TaskController.taskClaimed_1.value,
         callback: TaskController.onClaimTask_1
-      ) : goBtn()
+      ) : goBtn('/matches')
     ],
   );
 }
@@ -334,7 +325,7 @@ Widget taskContent_2(context) {
         xp: 50,
         claimed: TaskController.taskClaimed_2.value,
         callback: TaskController.onClaimTask_2
-      ) : goBtn()
+      ) : goBtn('/kick_clash')
     ],
   ));
 }
@@ -371,7 +362,7 @@ Widget pBtn(context, { point, xp, claimed, callback }) {
     )
   );
 }
-Widget goBtn() {
+Widget goBtn(path) {
   return SizedBox(
     width: 49,
     height: 30,
@@ -384,7 +375,10 @@ Widget goBtn() {
         overlayColor: Colors.white10,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      onPressed: (){},
+      onPressed: () {
+        Get.back();
+        Get.toNamed(path);
+      },
       child: Text('Go', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
     ),
   );

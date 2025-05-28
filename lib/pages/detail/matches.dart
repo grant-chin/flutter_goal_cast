@@ -2,9 +2,18 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/common/eventbus.dart';
+import 'package:flutter_goal_cast/common/utils.dart';
 import 'package:flutter_goal_cast/controller/match.dart';
 import 'package:flutter_goal_cast/wedget/detail_navbar.dart';
 import 'package:flutter_goal_cast/wedget/soccer_item.dart';
+import 'package:intl/intl.dart';
+
+var timeFormater = DateFormat('HH:mm');
+
+String _timeFormatter(date) {
+  return timeFormater.format(DateTime.fromMillisecondsSinceEpoch(date).toUtc());
+}
 
 class MatchesPage extends StatefulWidget {
   const MatchesPage({super.key});
@@ -14,11 +23,57 @@ class MatchesPage extends StatefulWidget {
 }
 
 class MatchesPageState extends State<MatchesPage> {
-  List get _matchList => MatchController.matchList;
+  List _listData = MatchController.matchList.where((o) => o['status'] == 1).toList();
+  List _matchList = MatchController.matchList.where((o) => o['status'] == 1).toList();
   final List _tabs = ['Today', 'Upcoming'];
   int _curTab = 0;
-  final List _tabSoccer = ['All Matches', 'UEFA Champions League', 'UEFA Europa League'];
+  int _curMatch = 0;
+  final List _tabSoccer = ['All Matches'];
   int _curTabSoccer = 0;
+
+  @override
+  initState() {
+    super.initState();
+    initLeagues();
+    bus.on('updateLeagues', (_) => _onTabChange(_curTab));
+  }
+  @override
+  dispose() {
+    super.dispose();
+    bus.off('updateLeagues');
+  }
+
+  // 初始化联赛类型
+  initLeagues() {
+    _tabSoccer.clear();
+    setState(() => _tabSoccer.add('All Matches'));
+    for (int i = 0; i < _listData.length; i++) {
+      String league = _listData[i]['name'];
+      if (!_tabSoccer.contains(league)) {
+        setState(() => _tabSoccer.add(league));
+      }
+    }
+  }
+
+  _onTabChange(index) {
+    setState(() => _curMatch = 0);
+    setState(() => _curTab = index);
+    if (index == 0) {
+      setState(() => _listData = MatchController.matchList.where((o) => o['status'] == 1).toList());
+    } else {
+      setState(() => _listData = MatchController.tomorrowMatch.where((o) => o['status'] == 1).toList());
+    }
+    _onTabSoccerChange(0);
+    initLeagues();
+  }
+  _onTabSoccerChange(index) {
+    setState(() => _curTabSoccer = index);
+    if (index == 0) {
+      setState(() => _matchList = _listData);
+    } else {
+      setState(() => _matchList = _listData.where((o) => o['name'] == _tabSoccer[index]).toList());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +98,7 @@ class MatchesPageState extends State<MatchesPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(_tabs.length, (index) => GestureDetector(
-          onTap: () => setState(() => _curTab = index),
+          onTap: () => _onTabChange(index),
           child: Container(
             width: 169,
             alignment: Alignment.center,
@@ -88,38 +143,40 @@ class MatchesPageState extends State<MatchesPage> {
               Container(
                 height: 22,
                 alignment: Alignment.center,
-                child: Text('UEFA Champions League', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500)),
+                child: Text('${_listData[_curMatch]['name']}', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500, overflow: TextOverflow.ellipsis)),
               ),
               Expanded(child: Row(
-                spacing: 16,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
                     width: 130,
-                    height: 62,
+                    height: 74,
                     alignment: Alignment.center,
                     child: Column(
                       children: [
-                        Image.asset('assets/icons/club/manCity.png', width: 40),
-                        Text('ManCity', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
+                        Image.network('https://images.fotmob.com/image_resources/logo/teamlogo/${_listData[_curMatch]['homeId']}.png', width: 40),
+                        SizedBox(width: 96, child: Text(_listData[_curMatch]['homeName'], style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500), textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis)),
                       ],
                     )
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Today', style: TextStyle(color: Color(0xFF01FFF7), fontSize: 16, fontWeight: FontWeight.w700)),
-                      Text('17:55', style: TextStyle(color: Color(0xFF01FFF7), fontSize: 16, fontWeight: FontWeight.w500)),
-                    ],
+                  SizedBox(
+                    width: 80,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(_curTab == 0 ? 'Today' : 'Tomorrow', style: TextStyle(color: Color(0xFF01FFF7), fontSize: 16, fontWeight: FontWeight.w700)),
+                        Text(_timeFormatter(_listData[_curMatch]['matchTime'] * 1000), style: TextStyle(color: Color(0xFF01FFF7), fontSize: 16, fontWeight: FontWeight.w500)),
+                      ],
+                    )
                   ),
                   Container(
                     width: 130,
-                    height: 62,
+                    height: 74,
                     alignment: Alignment.center,
                     child: Column(
                       children: [
-                        Image.asset('assets/icons/club/manCity.png', width: 40),
-                        Text('ManCity', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500))
+                        Image.network('https://images.fotmob.com/image_resources/logo/teamlogo/${_listData[_curMatch]['awayId']}.png', width: 40),
+                        SizedBox(width: 96, child: Text(_listData[_curMatch]['awayName'], style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500), textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis)),
                       ],
                     )
                   ),
@@ -129,42 +186,93 @@ class MatchesPageState extends State<MatchesPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 16,
                 children: [
-                  Container(
-                    width: 102,
-                    height: 32,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.white30,
-                      borderRadius: BorderRadius.circular(8)
-                    ),
-                    child: Text('1', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
+                  GestureDetector(
+                    onTap: () => Utils.forcastDialog(context, type: 1, item: _listData[_curMatch]),
+                    child: Container(
+                      width: 102,
+                      height: 32,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: _listData[_curMatch]['forecast'] == true && _listData[_curMatch]['forecastId'] == '${_listData[_curMatch]['homeId']}' ? Color(0xFF01FFF7) : Colors.white30,
+                        borderRadius: BorderRadius.circular(8)
+                      ),
+                      child: Text('1', style: TextStyle(color: _listData[_curMatch]['forecast'] == true && _listData[_curMatch]['forecastId'] == '${_listData[_curMatch]['homeId']}' ? Color(0xFF070123) : Colors.white, fontSize: 14, fontWeight: FontWeight.w500))
+                    )
                   ),
-                  Container(
-                    width: 102,
-                    height: 32,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.white30,
-                      borderRadius: BorderRadius.circular(8)
-                    ),
-                    child: Text('Draw', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
+                  GestureDetector(
+                    onTap: () => Utils.forcastDialog(context, type: 1, item: _listData[_curMatch]),
+                    child: Container(
+                      width: 102,
+                      height: 32,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: _listData[_curMatch]['forecast'] == true && _listData[_curMatch]['forecastId'] == '0' ? Color(0xFF01FFF7) : Colors.white30,
+                        borderRadius: BorderRadius.circular(8)
+                      ),
+                      child: Text('Draw', style: TextStyle(color: _listData[_curMatch]['forecast'] == true && _listData[_curMatch]['forecastId'] == '0' ? Color(0xFF070123) : Colors.white, fontSize: 14, fontWeight: FontWeight.w500))
+                    )
                   ),
-                  Container(
-                    width: 102,
-                    height: 32,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.white30,
-                      borderRadius: BorderRadius.circular(8)
-                    ),
-                    child: Text('2', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
+                  GestureDetector(
+                    onTap: () => Utils.forcastDialog(context, type: 1, item: _listData[_curMatch]),
+                    child: Container(
+                      width: 102,
+                      height: 32,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: _listData[_curMatch]['forecast'] == true && _listData[_curMatch]['forecastId'] == '${_listData[_curMatch]['awayId']}' ? Color(0xFF01FFF7) : Colors.white30,
+                        borderRadius: BorderRadius.circular(8)
+                      ),
+                      child: Text('2', style: TextStyle(color: _listData[_curMatch]['forecast'] == true && _listData[_curMatch]['forecastId'] == '${_listData[_curMatch]['awayId']}' ? Color(0xFF070123) : Colors.white, fontSize: 14, fontWeight: FontWeight.w500))
+                    )
                   ),
                 ],
               ),
               SizedBox(height: 16)
             ],
           ),
-        ))
+        )),
+        Positioned(
+          left: 8,
+          child: Offstage(
+            offstage: _curMatch <= 0,
+            child: GestureDetector(
+              onTap: () => setState(() => _curMatch--),
+              child: Container(
+                width: 32,
+                height: 32,
+                padding: EdgeInsets.only(right: 2),
+                decoration: ShapeDecoration(
+                  color: Colors.white30,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: Icon(Icons.arrow_back_ios_outlined, size: 16, color: Colors.white,)
+              )
+            )
+          )
+        ),
+        Positioned(
+          right: 8,
+          child: Offstage(
+            offstage: _curMatch >= _matchList.length || _curMatch >= 2,
+            child: GestureDetector(
+              onTap: () => setState(() => _curMatch++),
+              child: Container(
+                width: 32,
+                height: 32,
+                padding: EdgeInsets.only(left: 2),
+                decoration: ShapeDecoration(
+                  color: Colors.white30,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: Icon(Icons.arrow_forward_ios_outlined, size: 16, color: Colors.white,)
+              ),
+            )
+          )
+        ),
       ]
     );
   }
@@ -172,6 +280,7 @@ class MatchesPageState extends State<MatchesPage> {
   Widget Soccer() {
     return Column(
       spacing: 12,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
@@ -182,7 +291,13 @@ class MatchesPageState extends State<MatchesPage> {
           ]
         ),
         SoccerTab(),
-        Column(spacing: 8, children: List.generate(_matchList.length, (index) => SoccerItem(context, item: _matchList[index])))
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            spacing: 8,
+            children: List.generate(_matchList.length, (index) => SoccerItem(context, item: _matchList[index]))
+          ),
+        )
       ]
     );
   }
@@ -195,7 +310,7 @@ class MatchesPageState extends State<MatchesPage> {
           child: Row(
             spacing: 12,
             children: List.generate(_tabSoccer.length, (index) => GestureDetector(
-              onTap: () => setState(() => _curTabSoccer = index),
+              onTap: () => _onTabSoccerChange(index),
               child: Container(
                 height: 30,
                 alignment: Alignment.center,

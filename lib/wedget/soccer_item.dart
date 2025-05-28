@@ -2,19 +2,24 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_goal_cast/common/utils.dart';
+import 'package:flutter_goal_cast/controller/match.dart';
 import 'package:intl/intl.dart';
 
-var formater = DateFormat('yyyy-MM-dd');
 var timeFormater = DateFormat('yyyy-MM-dd HH:mm');
 
 String _timeFormatter(date) {
-  return timeFormater.format(DateTime.fromMillisecondsSinceEpoch(date));
+  return timeFormater.format(DateTime.fromMillisecondsSinceEpoch(date).toUtc());
 }
 
-Widget SoccerItem(context, { required item }) {
+Widget SoccerItem(context, { required item, bool? collectable }) {
+  bool forecastHome = item['forecast'] == true && item['forecastId'] == '${item['homeId']}';
+  bool forecastAway = item['forecast'] == true && item['forecastId'] == '${item['awayId']}';
+  bool forecastDraw = item['forecast'] == true && item['forecastId'] == '0';
+  bool result = (item['homeScore'] > item['awayScore'] && forecastHome) || (item['homeScore'] < item['awayScore'] && forecastAway) || (item['homeScore'] == item['awayScore'] && forecastDraw);
+  
   return Container(
     width: 370,
-    height: 174,
+    height: item['status'] == 6 ? 174 : 188,
     decoration: BoxDecoration(
       color: Color(0xFF12072F),
       borderRadius: BorderRadius.circular(8)
@@ -53,6 +58,20 @@ Widget SoccerItem(context, { required item }) {
                   ],
                 ),
               ),
+              Offstage(
+                offstage: item['status'] != 6,
+                child: Container(
+                  width: 58,
+                  height: 14,
+                  margin: EdgeInsets.only(top: 8),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.white30,
+                    borderRadius: BorderRadius.circular(4)
+                  ),
+                  child: Text('Full Time', style: TextStyle(color: Colors.white60, fontSize: 11))
+                )
+              ),
               Expanded(
                 child: Row(
                   spacing: 24,
@@ -83,53 +102,67 @@ Widget SoccerItem(context, { required item }) {
                   ]
                 )
               ),
-              Row(
+              item['status'] == 6 ? Image.asset('assets/images/bg/box_${result ? 'win' : 'lose'}.png', height: 32) : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 16,
                 children: [
                   GestureDetector(
-                    onTap: () => Utils.forcastDialog(context, id: item['id'], type: 1, item: item),
+                    onTap: () => Utils.forcastDialog(context, type: 1, item: item),
                     child: Container(
                       width: 102,
                       height: 32,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: Colors.white10,
+                        color: forecastHome ? Color(0xFF01FFF7) : Colors.white10,
                         borderRadius: BorderRadius.circular(8)
                       ),
-                      child: Text('1', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
+                      child: Text('1', style: TextStyle(color: forecastHome ? Color(0xFF070123) : Colors.white70, fontSize: 14, fontWeight: FontWeight.w500))
                     )
                   ),
                   GestureDetector(
-                    onTap: () => Utils.forcastDialog(context, id: item['id'], type: 0, item: item),
+                    onTap: () => Utils.forcastDialog(context, type: 0, item: item),
                     child: Container(
                       width: 102,
                       height: 32,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: Colors.white10,
+                        color: forecastDraw ? Color(0xFF01FFF7) : Colors.white10,
                         borderRadius: BorderRadius.circular(8)
                       ),
-                      child: Text('Draw', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
+                      child: Text('Draw', style: TextStyle(color: forecastDraw ? Color(0xFF070123) : Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
                     )
                   ),
                   GestureDetector(
-                    onTap: () => Utils.forcastDialog(context, id: item['id'], type: 2, item: item),
+                    onTap: () => Utils.forcastDialog(context, type: 2, item: item),
                     child: Container(
                       width: 102,
                       height: 32,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: Colors.white10,
+                        color: forecastAway ? Color(0xFF01FFF7) : Colors.white10,
                         borderRadius: BorderRadius.circular(8)
                       ),
-                      child: Text('2', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
+                      child: Text('2', style: TextStyle(color: forecastAway ? Color(0xFF070123) : Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
                     )
                   )
                 ],
-              ),
+              )
             ],
           ),
+        ),
+        Positioned(
+          top: 12,
+          right: 12,
+          child: GestureDetector(
+            onTap: () => MatchController.onCollect(item),
+            child: Container(
+              width: 24,
+              height: 24,
+              color: Colors.transparent,
+              padding: EdgeInsets.all(4),
+              child: Image.asset('assets/icons/collection${item['collected'] ? '_ac' : ''}.png', width: 16)
+            ),
+          )
         )
       ],
     ),

@@ -1,8 +1,11 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/common/eventbus.dart';
 import 'package:flutter_goal_cast/controller/match.dart';
 import 'package:flutter_goal_cast/controller/user.dart';
+import 'package:flutter_goal_cast/wedget/primary_btn.dart';
 import 'package:flutter_goal_cast/wedget/soccer_item.dart';
 import 'package:get/get.dart' hide Response;
 
@@ -14,15 +17,83 @@ class MinesPage extends StatefulWidget {
 }
 
 class MinesPageState extends State<MinesPage> {
-  List get _matchList => MatchController.matchList;
+  List _dataList = [];
+  List get _openList => MatchController.matchList.where((o) => o['forecast'] == true && o['status'] == 1).toList();
+  List get _closeList => MatchController.matchList.where((o) => o['forecast'] == true && o['status'] == 6).toList();
+  List get _collectionList => MatchController.matchList.where((o) => o['forecast'] == true && o['collected'] == true).toList();
   int get _level => UserController.level.value;
   String get _nickname => UserController.nickname.value;
   String get _points => UserController.pointStr.value;
   
   final List _tabs = ['Open', 'Closed', 'Collection'];
   int _curTab = 0;
-  final List _tabSoccer = ['All Matches', 'UEFA Champions League', 'UEFA Europa League'];
+  List _tabSoccer = ['All Matches'];
   int _curTabSoccer = 0;
+
+  @override
+  initState() {
+    super.initState();
+    bus.on('updateLeagues', (_) => _onTabChange(_curTab));
+  }
+  @override
+  dispose() {
+    super.dispose();
+    bus.off('updateLeagues');
+  }
+
+  _onTabChange(index) {
+    setState(() {
+      _curTab = index;
+      switch (index) {
+        case 0: _dataList = _openList; break;
+        case 1: _dataList = _closeList; break;
+        case 2: _dataList = _collectionList; break;
+      }
+    });
+    List leagues = ['All Matches'];
+    for (int i = 0; i < _dataList.length; i++) {
+      String league = _dataList[i]['name'];
+      if (!leagues.contains(league)) {
+        leagues.add(league);
+      }
+    }
+    setState(() {
+      _tabSoccer = leagues;
+    });
+  }
+
+  // 右上角提示
+  _showInfo() {
+    showDialog(
+      context: context,
+      useSafeArea: false,
+      builder: (_) => Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Material(
+              color: Colors.transparent,
+              child: SlideInUp(
+                duration: Duration(milliseconds: 200),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 550 * MediaQuery.of(context).size.width / 402,
+                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 36),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: AssetImage('assets/images/bg/bg_info.png'))
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      PrimaryBtn(text: 'Got it', width: MediaQuery.of(context).size.width - 32, func: () => Get.back())
+                    ],
+                  )
+                )
+              )
+            )
+          ],
+        ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +175,7 @@ class MinesPageState extends State<MinesPage> {
                 overlayColor: Colors.white10,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: (){},
+              onPressed: _showInfo,
               child: Image.asset('assets/icons/info.png', width: 16)
             ),
           )
@@ -121,7 +192,7 @@ class MinesPageState extends State<MinesPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(_tabs.length, (index) => GestureDetector(
-          onTap: () => setState(() => _curTab = index),
+          onTap: () => _onTabChange(index),
           child: Container(
             width: 112,
             alignment: Alignment.center,
@@ -141,17 +212,18 @@ class MinesPageState extends State<MinesPage> {
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 24),
           child: Column(
-            spacing: 24,
             children: [
-              AvailableRewards(),
+              _curTab == 1 ? AvailableRewards() : Container(),
               Soccer(),
-              SizedBox(height: MediaQuery.of(context).padding.bottom + 64)
+              SizedBox(height: 24),
+              SizedBox(height: MediaQuery.of(context).padding.bottom + 36)
             ]
           ),
         )
       )
     ]));
   }
+  
   Widget AvailableRewards() {
     return Column(
       spacing: 12,
@@ -227,13 +299,15 @@ class MinesPageState extends State<MinesPage> {
               )
             );
           }
-        )
+        ),
+        SizedBox(height: 12)
       ]
     );
   }
+  
   Widget Soccer() {
     return Column(
-      spacing: 12,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
@@ -243,37 +317,55 @@ class MinesPageState extends State<MinesPage> {
             Text('Soccer', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
           ]
         ),
-        LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                spacing: 12,
-                children: List.generate(_tabSoccer.length, (index) => GestureDetector(
-                  onTap: () => setState(() => _curTabSoccer = index),
-                  child: Container(
-                    height: 30,
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: _curTabSoccer == index ? [Color(0xFFBE71FD), Color(0xFF8033D1)] : [Color(0xFF170C34), Color(0xFF170C34)],
-                        stops: [0, 1], // 调整渐变范围
-                      ),
-                      borderRadius: BorderRadius.circular(8)
-                    ),
-                    child: Text(_tabSoccer[index], style: TextStyle(color: _curTabSoccer == index ? Colors.white : Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
-                  ),
-                ))
-              )
-            );
-          }
-        ),
-        Obx(() => Column(spacing: 8, children: List.generate(_matchList.length, (index) => SoccerItem(context, item: _matchList[index]))))
+        SizedBox(height: 12),
+        SoccerTab(),
+        SizedBox(height: 12),
+        (_curTabSoccer == 0 ? _dataList : _dataList.where((xx) => xx['name'] == _tabSoccer[_curTabSoccer]).toList()).isNotEmpty ? SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            spacing: 8,
+            children: List.generate(
+              _curTabSoccer == 0 ? _dataList.length : _dataList.where((xx) => xx['name'] == _tabSoccer[_curTabSoccer]).length,
+              (index) => SoccerItem(context, item: (_curTabSoccer == 0 ? _dataList : _dataList.where((xx) => xx['name'] == _tabSoccer[_curTabSoccer]).toList())[index])
+            )
+          ),
+        ) : Container(
+          height: 200,
+          alignment: Alignment.center,
+          child: Text('No Data', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
+        )
       ]
+    );
+  }
+  Widget SoccerTab() {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            spacing: 12,
+            children: List.generate(_tabSoccer.length, (index) => GestureDetector(
+              onTap: () => setState(() => _curTabSoccer = index),
+              child: Container(
+                height: 30,
+                alignment: Alignment.center,
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: _curTabSoccer == index ? [Color(0xFFBE71FD), Color(0xFF8033D1)] : [Color(0xFF170C34), Color(0xFF170C34)],
+                    stops: [0, 1], // 调整渐变范围
+                  ),
+                  borderRadius: BorderRadius.circular(8)
+                ),
+                child: Text(_tabSoccer[index], style: TextStyle(color: _curTabSoccer == index ? Colors.white : Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
+              ),
+            ))
+          )
+        );
+      }
     );
   }
 }

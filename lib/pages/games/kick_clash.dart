@@ -113,21 +113,22 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
 
   // 开始游戏
   _startGame() async {
+    if (_freeCount <= 0 && _points < 200) return;
     if (_freeCount > 0) {
       GameController.onFreeKick();
     } else if (_points >= 200) {
       UserController.decreasePoints(200);
-      setState(() => _loading = true);
-      await Future.delayed(Duration(milliseconds: 4000));
-      setState(() {
-        _start = true;
-        _closeLoading = false;
-      });
-      await Future.delayed(Duration(milliseconds: 500));
-      setState(() => _loading = false);
-      await Future.delayed(Duration(milliseconds: 500));
-      _onNextRound();
     }
+    setState(() => _loading = true);
+    await Future.delayed(Duration(milliseconds: 4000));
+    setState(() {
+      _start = true;
+      _closeLoading = false;
+    });
+    await Future.delayed(Duration(milliseconds: 500));
+    setState(() => _loading = false);
+    await Future.delayed(Duration(milliseconds: 500));
+    _onNextRound();
   }
 
   // 抽取次数
