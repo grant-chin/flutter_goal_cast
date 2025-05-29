@@ -2,8 +2,11 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/common/utils.dart';
 import 'package:flutter_goal_cast/controller/invited.dart';
 import 'package:flutter_goal_cast/wedget/detail_navbar.dart';
+import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 
 class InvitedPage extends StatefulWidget {
   const InvitedPage({super.key});
@@ -14,38 +17,56 @@ class InvitedPage extends StatefulWidget {
 
 class InvitedPageState extends State<InvitedPage> {
   int get _invitedCount => InvitedController.invitedCount.value;
+  List get _claimList => InvitedController.claimList;
   final List _invitedList = [
-    {
-      'count': 1,
-      'point': 100,
-      'xp': 10,
-    },
-    {
-      'count': 3,
-      'point': 200,
-      'xp': 30,
-    },
-    {
-      'count': 5,
-      'point': 300,
-      'xp': 50,
-    },
-    {
-      'count': 7,
-      'point': 400,
-      'xp': 70,
-    },
-    {
-      'count': 9,
-      'point': 500,
-      'xp': 90,
-    },
-    {
-      'count': 15,
-      'point': 600,
-      'xp': 150,
-    },
+    { 'count': 1, 'point': 100, 'xp': 10 },
+    { 'count': 3, 'point': 200, 'xp': 30 },
+    { 'count': 5, 'point': 300, 'xp': 50 },
+    { 'count': 7, 'point': 400, 'xp': 70 },
+    { 'count': 9, 'point': 500, 'xp': 90 },
+    { 'count': 15, 'point': 600, 'xp': 150 },
+    { 'count': 30, 'point': 900, 'xp': 200 },
+    { 'count': 50, 'point': 1500, 'xp': 500 },
+    { 'count': 100, 'point': 3000, 'xp': 1000 },
+    { 'count': 300, 'point': 9000, 'xp': 2000 },
   ];
+  bool successShared = false;
+
+  @override
+  void initState() {
+    super.initState();
+    AppLifecycleListener(
+      onStateChange: _onStateChanged,
+    );
+  }
+  void _onStateChanged(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.detached: () {};
+      case AppLifecycleState.resumed: _onResumed();
+      case AppLifecycleState.inactive: () {};
+      case AppLifecycleState.hidden: () {};
+      case AppLifecycleState.paused: () {};
+    }
+  }
+  void _onResumed() {
+    if (successShared) {
+      setState(() => successShared = false);
+      InvitedController.onShare();
+      Utils.toast('Sharing success!');
+    }
+  }
+  _toShare() {
+    setState(() {
+      successShared = true;
+    });
+    Share.share('🚀 Goal Cast 💎');
+  }
+
+  _onClaim(index) {
+    Utils.shareReward(context, point: _invitedList[index]['point'], xp: _invitedList[index]['xp'], callback: () {
+      InvitedController.onClaim(index);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +120,7 @@ class InvitedPageState extends State<InvitedPage> {
                         overlayColor: Colors.black26,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
-                      onPressed: (){},
+                      onPressed: _toShare,
                       child: Text('Share', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700))
                     )
                   )
@@ -178,9 +199,10 @@ class InvitedPageState extends State<InvitedPage> {
               )
             ],
           ),
-          Container(
+          Obx(() => Container(
             width: 71,
             height: 32,
+            padding: EdgeInsets.all(_claimList.contains(index) ? 1 : 0),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -194,17 +216,17 @@ class InvitedPageState extends State<InvitedPage> {
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.all(0),
                 foregroundColor: Colors.white,
-                disabledForegroundColor: Colors.white60,
+                disabledForegroundColor: _claimList.contains(index) ? Colors.white : Colors.white60,
                 backgroundColor: Colors.transparent,
                 disabledBackgroundColor: Color(0xFF38295E),
                 shadowColor: Colors.transparent,
                 overlayColor: Colors.black26,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: _invitedCount >= _invitedList[index]['count'] ? (){} : null,
-              child: Text('Claim', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
+              onPressed: _invitedCount >= _invitedList[index]['count'] && !_claimList.contains(index) ? () => _onClaim(index) : null,
+              child: Text(_claimList.contains(index) ? 'Done' : 'Claim', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
             )
-          )
+          ))
         ],
       ),
     );

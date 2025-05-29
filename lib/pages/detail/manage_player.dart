@@ -82,12 +82,16 @@ class PlayerMPageState extends State<PlayerMPage> {
         child: Container(
           padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).padding.bottom + 16),
           alignment: Alignment.center,
-          child: Wrap(
+          child: _myPlayers.isNotEmpty ? Wrap(
             spacing: 16,
             runSpacing: 24,
             alignment: WrapAlignment.start,
             children: List.generate(_myPlayers.length, (index) => PlayerItem(index))
-          ),
+          ) : Container(
+            height: 200,
+            alignment: Alignment.center,
+            child: Text('No Data', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+          )
         )
       )
     ]));

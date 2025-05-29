@@ -38,6 +38,10 @@ class Utils {
       TaskController.onClaimDaily();
     });
   }
+  // 分享奖励
+  static void shareReward(BuildContext context, { point, xp, Function? callback }) {
+    globalDialog(context, title: 'Sharing is Winning!', text: 'Spread the Joy!', point: point, xp: xp, callback: callback);
+  }
   // 游戏成功
   static void gameSuccess(BuildContext context, { Function? callback }) {
     globalDialog(context, title: 'Goal! You Win!', text: 'Your shot hits the net! Well done, champion!', point: 400, xp: 50, callback: callback);
