@@ -24,7 +24,7 @@ class HomePageState extends State<HomePage> {
   String get _nickname => UserController.nickname.value;
   String get _point => UserController.pointStr.value;
   bool get _dailyClaimed => TaskController.dailyClaimed.value;
-  List get _matchList => MatchController.matchList;
+  List get _matchList => MatchController.matchList.where((o) => o['status'] == 1).toList();
 
   _timeFormatter(date) {
     return timeFormater.format(DateTime.fromMillisecondsSinceEpoch(date).toUtc());

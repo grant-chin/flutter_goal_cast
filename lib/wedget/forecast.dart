@@ -30,7 +30,7 @@ class ForecastState extends State<Forecast> {
       case 1: forecastId = widget.item['homeId']; break;
       case 2: forecastId = widget.item['awayId']; break;
     }
-    MatchController.onForecast(id: widget.item['id'], forecastId: forecastId, amount: amount);
+    MatchController.onForecast(id: widget.item['id'], forecastId: forecastId, amount: amount, item: widget.item);
     Utils.toast('Success! Check it out in Mines.');
     Get.back();
   }

@@ -19,7 +19,8 @@ class MinesPage extends StatefulWidget {
 class MinesPageState extends State<MinesPage> {
   List _dataList = [];
   List get _openList => MatchController.matchList.where((o) => o['forecast'] == true && o['status'] == 1).toList();
-  List get _closeList => MatchController.matchList.where((o) => o['forecast'] == true && o['status'] == 6).toList();
+  List get _closeList => MatchController.forcastFullList.where((o) => o['status'] == 6).toList();
+  List get _rewardList => MatchController.rewardList;
   List get _collectionList => MatchController.matchList.where((o) => o['collected'] == true).toList();
   int get _level => UserController.level.value;
   String get _nickname => UserController.nickname.value;
@@ -50,6 +51,7 @@ class MinesPageState extends State<MinesPage> {
         case 2: _dataList = _collectionList; break;
       }
     });
+    // MatchController.initClosedData();
     List leagues = ['All Matches'];
     for (int i = 0; i < _dataList.length; i++) {
       String league = _dataList[i]['name'];
@@ -213,7 +215,7 @@ class MinesPageState extends State<MinesPage> {
           padding: EdgeInsets.symmetric(vertical: 24),
           child: Column(
             children: [
-              _curTab == 1 ? AvailableRewards() : Container(),
+              _curTab == 1 && _rewardList.isNotEmpty ? AvailableRewards() : Container(),
               Soccer(),
               SizedBox(height: 24),
               SizedBox(height: MediaQuery.of(context).padding.bottom + 36)
@@ -238,12 +240,12 @@ class MinesPageState extends State<MinesPage> {
         ),
         LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
-            return SingleChildScrollView(
+            return Obx(() => SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 spacing: 12,
-                children: List.generate(3, (index) => GestureDetector(
+                children: List.generate(_rewardList.length, (index) => GestureDetector(
                   onTap: () => {},
                   child: Container(
                     width: 187,
@@ -262,14 +264,14 @@ class MinesPageState extends State<MinesPage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           spacing: 12,
                           children: [
-                            Image.asset('assets/icons/club/Atletico.png', width: 40),
+                            Image.network('https://images.fotmob.com/image_resources/logo/teamlogo/${_dataList[index]['homeId']}.png', width: 40),
                             Column(
                               children: [
-                                Text('1 : 2', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+                                Text('${_dataList[index]['homeScore']} : ${_dataList[index]['awayScore']}', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
                                 Text('Full time', style: TextStyle(color: Colors.white30, fontSize: 11, fontWeight: FontWeight.w400)),
                               ]
                             ),
-                            Image.asset('assets/icons/club/Atletico.png', width: 40),
+                            Image.network('https://images.fotmob.com/image_resources/logo/teamlogo/${_dataList[index]['awayId']}.png', width: 40),
                           ],
                         ),
                         Container(
@@ -297,7 +299,7 @@ class MinesPageState extends State<MinesPage> {
                   ),
                 ))
               )
-            );
+            ));
           }
         ),
         SizedBox(height: 12)
@@ -326,7 +328,7 @@ class MinesPageState extends State<MinesPage> {
             spacing: 8,
             children: List.generate(
               _curTabSoccer == 0 ? _dataList.length : _dataList.where((xx) => xx['name'] == _tabSoccer[_curTabSoccer]).length,
-              (index) => SoccerItem(context, item: (_curTabSoccer == 0 ? _dataList : _dataList.where((xx) => xx['name'] == _tabSoccer[_curTabSoccer]).toList())[index], collectable: _curTab == 2)
+              (index) => SoccerItem(context, item: (_curTabSoccer == 0 ? _dataList : _dataList.where((xx) => xx['name'] == _tabSoccer[_curTabSoccer]).toList())[index], collectable: _curTab == 2, hideCollect: _curTab != 2)
             )
           ),
         ) : Container(

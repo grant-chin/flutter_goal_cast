@@ -11,7 +11,7 @@ String _timeFormatter(date) {
   return timeFormater.format(DateTime.fromMillisecondsSinceEpoch(date).toUtc());
 }
 
-Widget SoccerItem(context, { required item, bool? collectable }) {
+Widget SoccerItem(context, { required item, bool? collectable, bool? hideCollect }) {
   bool forecastHome = item['forecast'] == true && item['forecastId'] == '${item['homeId']}';
   bool forecastAway = item['forecast'] == true && item['forecastId'] == '${item['awayId']}';
   bool forecastDraw = item['forecast'] == true && item['forecastId'] == '0';
@@ -174,16 +174,20 @@ Widget SoccerItem(context, { required item, bool? collectable }) {
         Positioned(
           top: 12,
           right: 12,
-          child: GestureDetector(
-            onTap: () => MatchController.onCollect(item),
-            child: Container(
-              width: 24,
-              height: 24,
-              color: Colors.transparent,
-              padding: EdgeInsets.all(4),
-              child: Image.asset('assets/icons/collection${item['collected'] ? '_ac' : ''}.png', width: 16)
-            ),
+          child: Offstage(
+            offstage: hideCollect == true,
+            child: GestureDetector(
+              onTap: () => MatchController.onCollect(item),
+              child: Container(
+                width: 24,
+                height: 24,
+                color: Colors.transparent,
+                padding: EdgeInsets.all(4),
+                child: Image.asset('assets/icons/collection${item['collected'] ? '_ac' : ''}.png', width: 16)
+              ),
+            )
           )
+          
         )
       ],
     ),

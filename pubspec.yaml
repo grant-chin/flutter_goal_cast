@@ -29,7 +29,6 @@ flutter:
 
   assets:
     - assets/icons/
-    - assets/icons/club/
     - assets/images/
     - assets/images/tabbar/
     - assets/images/bg/

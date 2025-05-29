@@ -2,7 +2,9 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter_goal_cast/common/eventbus.dart';
+import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
 import '/common/share_pref.dart';
 import 'package:get/get.dart' hide Response;
 
@@ -14,15 +16,59 @@ class MatchController extends GetxController {
   static final collectMatch = RxList(); // 收藏列表
   static final forecastList = RxList(); // 预测列表
   static final forecastResult = RxList(); // 预测结果列表
+  static final forcastFullList = RxList(); // 预测列表-完整数据
   static final betList = RxList(); // 投注列表
   static final forecastToday = RxBool(false); // 今日是否完成预测
+  static final rewardList = RxList(); // 奖励列表
+  static final rewardClaimedList = RxList(); // 已领取奖励列表
 
   // 初始化
   static init() {
     String now = formater.format(DateTime.now());
     forecastToday.value = (SharePref.getString('forecastTime') ?? '') == now;
+    forcastFullList.value = SharePref.getString('forcastFullList') == null ? [] : jsonDecode(SharePref.getString('forcastFullList'));
+    rewardList.value = SharePref.getString('rewardList') == null ? [] : SharePref.getString('rewardList').split(',');
+    rewardClaimedList.value = SharePref.getString('rewardClaimedList') == null ? [] : SharePref.getString('rewardClaimedList').split(',');
     getTodayData();
     getTomorrowData();
+  }
+
+  // 已结束比赛
+  static initClosedData() {
+    for (int i = 0; i < forcastFullList.length; i++) {
+      String forcastId = '${forcastFullList[i]['id']}';
+      if (matchList.where((xx) => xx['id'] == forcastId).isEmpty) {
+        forcastFullList[i]['status'] = 6;
+        String resultId = forecastResult[forecastList.indexOf(forcastId)];
+        int homeScore = forcastFullList[i]['homeScore'];
+        int awayScore = forcastFullList[i]['awayScore'];
+        bool forecastHome = resultId == '${forcastFullList[i]['homeId']}';
+        bool forecastAway = resultId == '${forcastFullList[i]['awayId']}';
+        bool forecastDraw = resultId == '0';
+        bool forecastSuccess = (forecastHome && homeScore > awayScore) || (forecastAway && homeScore < awayScore) || (forecastDraw && homeScore == awayScore);
+        if (!rewardClaimedList.contains(forcastId)) {
+          if (forecastSuccess) {
+            if (rewardList.contains(forcastId)) return;
+            rewardList.add(forcastId);
+            SharePref.setString('rewardList', rewardList.join(','));
+          } else {
+            UserController.increaseXP(30 * UserController.level.value);
+            rewardClaimedList.add(forcastId);
+            SharePref.setString('rewardClaimedList', rewardClaimedList.join(','));
+          }
+        }
+      } else if (matchList.where((xx) => xx['id'] == forcastId).toList()[0]['status'] == 6) {
+        forcastFullList[i] = matchList.where((xx) => xx['id'] == forcastId).toList()[0];
+        forcastFullList[i]['forecastId'] = forecastResult[forecastList.indexOf(forcastId)];
+      }
+    }
+  }
+  // 领取奖励
+  static onClaimReward(id) {
+    rewardList.remove(id);
+    rewardClaimedList.add(id);
+    SharePref.setString('rewardList', rewardList.join(','));
+    SharePref.setString('rewardClaimedList', rewardClaimedList.join(','));
   }
 
   // 获取今日比赛数据
@@ -79,10 +125,10 @@ class MatchController extends GetxController {
 
   // 数据格式化
   static formatterData() {
-    forecastList.value = (SharePref.getString('forecastList') ?? '').split(',');
-    forecastResult.value = (SharePref.getString('forecastResult') ?? '').split(',');
-    betList.value = (SharePref.getString('betList') ?? '').split(',');
-    collectMatch.value = (SharePref.getString('collectMatch') ?? '').split(',');
+    forecastList.value = SharePref.getString('forecastList') == null ? [] : SharePref.getString('forecastList').split(',');
+    forecastResult.value = SharePref.getString('forecastResult') == null ? [] : SharePref.getString('forecastResult').split(',');
+    betList.value = SharePref.getString('betList') == null ? [] : SharePref.getString('betList').split(',');
+    collectMatch.value = SharePref.getString('collectMatch') == null ? [] : SharePref.getString('collectMatch').split(',');
     for(var i = 0; i < matchList.length; i++) {
       var item = matchList[i];
       if (forecastList.contains('${item['id']}')) {
@@ -118,7 +164,7 @@ class MatchController extends GetxController {
     formatterData();
   }
   // 提交预测
-  static onForecast({id, forecastId, amount}) {
+  static onForecast({id, forecastId, amount, required item}) {
     if (forecastList.contains('$id')) return;
 
     String now = formater.format(DateTime.now());
@@ -128,9 +174,12 @@ class MatchController extends GetxController {
     forecastList.add('$id');
     forecastResult.add('$forecastId');
     betList.add('$amount');
+    forcastFullList.add(item);
     SharePref.setString('forecastList', forecastList.join(','));
     SharePref.setString('forecastResult', forecastResult.join(','));
     SharePref.setString('betList', betList.join(','));
+    SharePref.setString('forcastFullList', jsonEncode(forcastFullList));
+
     formatterData();
   }
 }

@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_goal_cast/common/utils.dart';
+import 'package:flutter_goal_cast/controller/game.dart';
 import 'package:flutter_goal_cast/wedget/primary_btn.dart';
 import 'package:get/get.dart';
 
@@ -16,6 +17,7 @@ class ShotDaily extends StatefulWidget {
 }
 
 class ShotDailyState extends State<ShotDaily> with SingleTickerProviderStateMixin {
+  int get _freeCount => GameController.freeShot.value;
   final _scrollControllers = List.generate(5, (_) => ScrollController());
   final List<String> _ballList = ['basketball', 'soccer', 'volleyball', 'tennis', 'golf'];
   final List<double> _randomOffsets = [0, 0, 0, 0, 0];
@@ -67,7 +69,7 @@ class ShotDailyState extends State<ShotDaily> with SingleTickerProviderStateMixi
         controller.animateTo(
           354 + MediaQuery.of(context).padding.top,
           duration: Duration(seconds: 1),
-          curve: Curves.bounceIn,
+          curve: Curves.decelerate,
         );
       });
     });
@@ -82,6 +84,8 @@ class ShotDailyState extends State<ShotDaily> with SingleTickerProviderStateMixi
   // 开始抽奖
   void _startSpin() {
     if (runing) return;
+    if (_freeCount <= 0) return;
+    GameController.onFreeShot();
     _animationController.reset();
     setState(() {
       _runable = false;
@@ -142,7 +146,7 @@ class ShotDailyState extends State<ShotDaily> with SingleTickerProviderStateMixi
     }
     setState(() => _bingoIndex = bingoIndex);
     
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(milliseconds: 1300), () {
       if (_bingoIndex == -1) {
         Utils.shotFailed(context, callback: _reset);
       } else {
@@ -175,7 +179,7 @@ class ShotDailyState extends State<ShotDaily> with SingleTickerProviderStateMixi
             MachineBox(),
             ConbinationBox(),
             SizedBox(height: 16),
-            PrimaryBtn(text: 'Free shoot (3)', width: MediaQuery.of(context).size.width - 48, func: _runable ? _startSpin : null)
+            Obx(() => PrimaryBtn(text: 'Free shoot ($_freeCount)', width: MediaQuery.of(context).size.width - 48, func: _runable && _freeCount > 0 ? _startSpin : null))
           ],
         ),
       ),
@@ -208,7 +212,7 @@ class ShotDailyState extends State<ShotDaily> with SingleTickerProviderStateMixi
   
   Widget MachineBox() {
     double scale =  MediaQuery.of(context).size.width / 402;
-    return Bounce(child: Container(
+    return Container(
       margin: EdgeInsets.only(top: 16),
       width: MediaQuery.of(context).size.width,
       height: 310 * scale,
@@ -262,7 +266,7 @@ class ShotDailyState extends State<ShotDaily> with SingleTickerProviderStateMixi
           Positioned(top: 196 * scale, child: Image.asset('assets/images/game2/machine_point.png', width: 364 * scale)),
         ],
       )
-    ));
+    );
   }
   Widget _scrollItem(index) {
     double scale =  MediaQuery.of(context).size.width / 402;
