@@ -20,7 +20,7 @@ class MinesPageState extends State<MinesPage> {
   List _dataList = [];
   List get _openList => MatchController.matchList.where((o) => o['forecast'] == true && o['status'] == 1).toList();
   List get _closeList => MatchController.matchList.where((o) => o['forecast'] == true && o['status'] == 6).toList();
-  List get _collectionList => MatchController.matchList.where((o) => o['forecast'] == true && o['collected'] == true).toList();
+  List get _collectionList => MatchController.matchList.where((o) => o['collected'] == true).toList();
   int get _level => UserController.level.value;
   String get _nickname => UserController.nickname.value;
   String get _points => UserController.pointStr.value;
@@ -326,7 +326,7 @@ class MinesPageState extends State<MinesPage> {
             spacing: 8,
             children: List.generate(
               _curTabSoccer == 0 ? _dataList.length : _dataList.where((xx) => xx['name'] == _tabSoccer[_curTabSoccer]).length,
-              (index) => SoccerItem(context, item: (_curTabSoccer == 0 ? _dataList : _dataList.where((xx) => xx['name'] == _tabSoccer[_curTabSoccer]).toList())[index])
+              (index) => SoccerItem(context, item: (_curTabSoccer == 0 ? _dataList : _dataList.where((xx) => xx['name'] == _tabSoccer[_curTabSoccer]).toList())[index], collectable: _curTab == 2)
             )
           ),
         ) : Container(

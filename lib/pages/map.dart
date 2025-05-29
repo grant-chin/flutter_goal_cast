@@ -1,6 +1,9 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/common/utils.dart';
+import 'package:flutter_goal_cast/controller/map.dart';
+import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:get/get.dart';
 
 class MapPage extends StatefulWidget {
@@ -11,6 +14,20 @@ class MapPage extends StatefulWidget {
 }
 
 class MapPageState extends State<MapPage> {
+  int get _level => UserController.level.value;
+  int get _points => UserController.points.value;
+  List get _myPlayers => MapController.myPlayers;
+  List get _levelList => MapController.levelList;
+  final List _locationList = ['North America', 'South America', 'Africa', 'Europe', 'Asia', 'Oceania'];
+
+  _onHiringPlayer(index) {
+    if (_points < 1000 + 500 * _myPlayers.length) {
+      Utils.toast('Insufficient Balance');
+    } else {
+      MapController.onHiringPlayer(index);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -63,32 +80,32 @@ class MapPageState extends State<MapPage> {
                 Positioned(
                   top: 0,
                   left: 33 * MediaQuery.of(context).size.width / 402,
-                  child: Image.asset('assets/images/map/map_north_America_reach.png', width: 115 * MediaQuery.of(context).size.width / 402)
+                  child: Image.asset('assets/images/map/map_north_America${_level ~/ 5 == 0 ? '_cur' : (_level ~/ 5 > 0 ? '_reach' : '')}.png', width: 115 * MediaQuery.of(context).size.width / 402)
                 ),
                 Positioned(
                   bottom: 0,
                   left: 98 * MediaQuery.of(context).size.width / 402,
-                  child: Image.asset('assets/images/map/map_south_America_cur.png', width: 34 * MediaQuery.of(context).size.width / 402)
+                  child: Image.asset('assets/images/map/map_south_America${_level ~/ 5 == 1 ? '_cur' : (_level ~/ 5 > 1 ? '_reach' : '')}.png', width: 34 * MediaQuery.of(context).size.width / 402)
                 ),
                 Positioned(
                   bottom: 13 * MediaQuery.of(context).size.width / 402,
                   left: 175 * MediaQuery.of(context).size.width / 402,
-                  child: Image.asset('assets/images/map/map_Africa.png', width: 51 * MediaQuery.of(context).size.width / 402)
+                  child: Image.asset('assets/images/map/map_Africa${_level ~/ 5 == 2 ? '_cur' : (_level ~/ 5 > 2 ? '_reach' : '')}.png', width: 51 * MediaQuery.of(context).size.width / 402)
                 ),
                 Positioned(
                   top: 7 * MediaQuery.of(context).size.width / 402,
                   left: 178 * MediaQuery.of(context).size.width / 402,
-                  child: Image.asset('assets/images/map/map_Europe.png', width: 69 * MediaQuery.of(context).size.width / 402)
+                  child: Image.asset('assets/images/map/map_Europe${_level ~/ 5 == 3 ? '_cur' : (_level ~/ 5 > 3 ? '_reach' : '')}.png', width: 69 * MediaQuery.of(context).size.width / 402)
                 ),
                 Positioned(
                   top: 9 * MediaQuery.of(context).size.width / 402,
                   left: 215 * MediaQuery.of(context).size.width / 402,
-                  child: Image.asset('assets/images/map/map_Asia.png', width: 121 * MediaQuery.of(context).size.width / 402)
+                  child: Image.asset('assets/images/map/map_Asia${_level ~/ 5 == 4 ? '_cur' : (_level ~/ 5 > 4 ? '_reach' : '')}.png', width: 121 * MediaQuery.of(context).size.width / 402)
                 ),
                 Positioned(
                   bottom: 10 * MediaQuery.of(context).size.width / 402,
                   left: 284 * MediaQuery.of(context).size.width / 402,
-                  child: Image.asset('assets/images/map/map_Oceania.png', width: 49.33 * MediaQuery.of(context).size.width / 402)
+                  child: Image.asset('assets/images/map/map_Oceania${_level ~/ 5 >= 5 ? '_cur' : ''}.png', width: 49.33 * MediaQuery.of(context).size.width / 402)
                 ),
               ],
             )
@@ -99,7 +116,7 @@ class MapPageState extends State<MapPage> {
           child: Row(
             children: [
               Text('Current location:  ', style: TextStyle(color: Color.fromRGBO(7, 1, 35, 0.5), fontSize: 12, fontWeight: FontWeight.w500, height: 1)),
-              Text('North America', style: TextStyle(color: Color.fromRGBO(7, 1, 35, 0.5), fontSize: 16, fontWeight: FontWeight.w700, height: 1)),
+              Text(_locationList[_level ~/ 5 > 5 ? 5 : _level ~/ 5], style: TextStyle(color: Color.fromRGBO(7, 1, 35, 0.5), fontSize: 16, fontWeight: FontWeight.w700, height: 1)),
             ],
           )
         )
@@ -116,20 +133,19 @@ class MapPageState extends State<MapPage> {
           child: Wrap(
             spacing: 12,
             runSpacing: 24,
-            children: List.generate(18, (index) => PlayerItem(index))
+            children: List.generate(_level >= 30 ? 18 : (_level ~/ 5 + 1) * 3, (index) => PlayerItem(index))
           ),
         )
       )
     ]));
   }
   Widget PlayerItem(index) {
-    late bool owned = false;
     return Column(
       children: [
         Stack(
           alignment: Alignment.center,
           children: [
-            Image.asset('assets/images/map/player_border.png', height: 160),
+            Obx(() => Image.asset('assets/images/map/player_border${_myPlayers.contains('${index+1}') ? '_blue' : ''}.png', height: 160)),
             Positioned(child: Container(
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
@@ -147,13 +163,13 @@ class MapPageState extends State<MapPage> {
                   color: Color(0xFF38295E),
                   borderRadius: BorderRadius.only(bottomLeft: Radius.circular(8), bottomRight: Radius.circular(8))
                 ),
-                child: Text('S1', style: TextStyle(color: Colors.white, fontSize: 11)),
+                child: Obx(() => Text('S${_myPlayers.contains('${index+1}') ? _levelList[_myPlayers.indexOf('${index+1}')] : '1'}', style: TextStyle(color: Colors.white, fontSize: 11)))
               )
             ),
           ],
         ),
         SizedBox(height: 8),
-        owned ? Container(
+        Obx(() => _myPlayers.contains('${index+1}') ? Container(
           width: 73,
           height: 32,
           alignment: Alignment.center,
@@ -163,27 +179,30 @@ class MapPageState extends State<MapPage> {
             borderRadius: BorderRadius.circular(8)
           ),
           child: Text('Owned', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
-        ) : Container(
-          width: 80,
-          height: 32,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFFBE71FD), Color(0xFF8033D1)],
-              stops: [0, 1], // 调整渐变范围
+        ) : GestureDetector(
+          onTap: () => _onHiringPlayer(index),
+          child: Container(
+            width: 82,
+            height: 32,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFFBE71FD), Color(0xFF8033D1)],
+                stops: [0, 1], // 调整渐变范围
+              ),
+              borderRadius: BorderRadius.circular(8)
             ),
-            borderRadius: BorderRadius.circular(8)
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('1500', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
-              SizedBox(width: 4),
-              Image.asset('assets/icons/bets.png', width: 16)
-            ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Obx(() => Text('${UserController.pointFormat(1000 + 500 * _myPlayers.length)}', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600))),
+                SizedBox(width: 4),
+                Image.asset('assets/icons/bets.png', width: 16)
+              ],
+            )
           )
-        )
+        ))
       ],
     );
   }

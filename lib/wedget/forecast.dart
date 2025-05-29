@@ -123,7 +123,7 @@ class ForecastState extends State<Forecast> {
                     if (amount <= _points - 100) {
                       setState(() => amount += 100);
                     } else {
-                      Utils.toast('Insufficient balance');
+                      Utils.toast('Insufficient Balance');
                     }
                   },
                   child: Container(

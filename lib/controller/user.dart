@@ -24,7 +24,7 @@ class UserController extends GetxController {
     xp.value = SharePref.getInt('xp') ?? 0;
     xpAll.value = SharePref.getInt('xpAll') ?? 0;
     points.value = SharePref.getInt('points') ?? 0;
-    pointFormat();
+    pointStr.value = pointFormat(points.value);
     first.value = SharePref.getBool('first') == false ? false : true;
   }
 
@@ -51,16 +51,16 @@ class UserController extends GetxController {
   static increasePoints(int value) {
     points.value += value;
     SharePref.setInt('points', points.value);
-    pointFormat();
+    pointStr.value = pointFormat(points.value);
   }
   // 减少积分
   static decreasePoints(int value) {
     points.value -= value;
     SharePref.setInt('points', points.value);
-    pointFormat();
+    pointStr.value = pointFormat(points.value);
   }
   // 积分货币格式化
-  static pointFormat() {
-    pointStr.value = NumberFormat('#,###').format(points.value);
+  static pointFormat(value) {
+    return NumberFormat('#,###').format(value);
   }
 }

@@ -102,51 +102,72 @@ Widget SoccerItem(context, { required item, bool? collectable }) {
                   ]
                 )
               ),
-              item['status'] == 6 ? Image.asset('assets/images/bg/box_${result ? 'win' : 'lose'}.png', height: 32) : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 16,
-                children: [
-                  GestureDetector(
-                    onTap: () => Utils.forcastDialog(context, type: 1, item: item),
-                    child: Container(
-                      width: 102,
-                      height: 32,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: forecastHome ? Color(0xFF01FFF7) : Colors.white10,
-                        borderRadius: BorderRadius.circular(8)
-                      ),
-                      child: Text('1', style: TextStyle(color: forecastHome ? Color(0xFF070123) : Colors.white70, fontSize: 14, fontWeight: FontWeight.w500))
+              
+              Offstage(
+                offstage: item['status'] != 1 || collectable == true,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 16,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Utils.forcastDialog(context, type: 1, item: item),
+                      child: Container(
+                        width: 102,
+                        height: 32,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: forecastHome ? Color(0xFF01FFF7) : Colors.white10,
+                          borderRadius: BorderRadius.circular(8)
+                        ),
+                        child: Text('1', style: TextStyle(color: forecastHome ? Color(0xFF070123) : Colors.white70, fontSize: 14, fontWeight: FontWeight.w500))
+                      )
+                    ),
+                    GestureDetector(
+                      onTap: () => Utils.forcastDialog(context, type: 0, item: item),
+                      child: Container(
+                        width: 102,
+                        height: 32,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: forecastDraw ? Color(0xFF01FFF7) : Colors.white10,
+                          borderRadius: BorderRadius.circular(8)
+                        ),
+                        child: Text('Draw', style: TextStyle(color: forecastDraw ? Color(0xFF070123) : Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
+                      )
+                    ),
+                    GestureDetector(
+                      onTap: () => Utils.forcastDialog(context, type: 2, item: item),
+                      child: Container(
+                        width: 102,
+                        height: 32,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: forecastAway ? Color(0xFF01FFF7) : Colors.white10,
+                          borderRadius: BorderRadius.circular(8)
+                        ),
+                        child: Text('2', style: TextStyle(color: forecastAway ? Color(0xFF070123) : Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
+                      )
                     )
+                  ],
+                )
+              ),
+              Offstage(
+                offstage: item['status'] != 6,
+                child: Image.asset('assets/images/bg/box_${result ? 'win' : 'lose'}.png')
+              ),
+              Offstage(
+                offstage: collectable != true,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 36,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.white10,
+                    borderRadius: BorderRadius.circular(8)
                   ),
-                  GestureDetector(
-                    onTap: () => Utils.forcastDialog(context, type: 0, item: item),
-                    child: Container(
-                      width: 102,
-                      height: 32,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: forecastDraw ? Color(0xFF01FFF7) : Colors.white10,
-                        borderRadius: BorderRadius.circular(8)
-                      ),
-                      child: Text('Draw', style: TextStyle(color: forecastDraw ? Color(0xFF070123) : Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
-                    )
-                  ),
-                  GestureDetector(
-                    onTap: () => Utils.forcastDialog(context, type: 2, item: item),
-                    child: Container(
-                      width: 102,
-                      height: 32,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: forecastAway ? Color(0xFF01FFF7) : Colors.white10,
-                        borderRadius: BorderRadius.circular(8)
-                      ),
-                      child: Text('2', style: TextStyle(color: forecastAway ? Color(0xFF070123) : Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
-                    )
-                  )
-                ],
-              )
+                  child: Text('${item['homeScore']} : ${item['awayScore']}', style: TextStyle(color: Colors.white60, fontSize: 16, fontWeight: FontWeight.w700))
+                )
+              ),
             ],
           ),
         ),

@@ -1,8 +1,14 @@
 
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_goal_cast/common/utils.dart';
+import 'package:flutter_goal_cast/controller/map.dart';
+import 'package:flutter_goal_cast/controller/user.dart';
 import 'package:flutter_goal_cast/wedget/detail_navbar.dart';
+import 'package:get/get.dart';
 
 class PlayerMPage extends StatefulWidget {
   const PlayerMPage({super.key});
@@ -12,6 +18,22 @@ class PlayerMPage extends StatefulWidget {
 }
 
 class PlayerMPageState extends State<PlayerMPage> {
+  int get _points => UserController.points.value;
+  String get _pointStr => UserController.pointStr.value;
+  List get _myPlayers => MapController.myPlayers;
+  List get _levelList => MapController.levelList;
+
+  _formatterPoint(index) {
+    return 2000 + 500 * pow(2, _levelList[index] - 1).toInt();
+  }
+  _onUpgrade(index) {
+    if (_points < _formatterPoint(index)) {
+      Utils.toast('Insufficient Balance');
+    } else {
+      MapController.onUpgradePlayer(index);
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -47,7 +69,7 @@ class PlayerMPageState extends State<PlayerMPage> {
           children: [
             Image.asset('assets/icons/bets.png', width: 16),
             SizedBox(width: 6),
-            Text('1,000', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500))
+            Obx(() => Text(_pointStr, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)))
           ],
         )
       ),
@@ -59,11 +81,12 @@ class PlayerMPageState extends State<PlayerMPage> {
       SliverToBoxAdapter(
         child: Container(
           padding: EdgeInsets.only(top: 16, bottom: MediaQuery.of(context).padding.bottom + 16),
+          alignment: Alignment.center,
           child: Wrap(
             spacing: 16,
             runSpacing: 24,
-            alignment: WrapAlignment.center,
-            children: List.generate(18, (index) => PlayerItem(index))
+            alignment: WrapAlignment.start,
+            children: List.generate(_myPlayers.length, (index) => PlayerItem(index))
           ),
         )
       )
@@ -81,7 +104,7 @@ class PlayerMPageState extends State<PlayerMPage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16)
               ),
-              child: Image.asset('assets/images/map/player${index+1}.png', height: 216, fit: BoxFit.cover),
+              child: Image.asset('assets/images/map/player${_myPlayers[index]}.png', height: 216, fit: BoxFit.cover),
             )),
             Positioned(
               bottom: 12,
@@ -101,7 +124,7 @@ class PlayerMPageState extends State<PlayerMPage> {
                   spacing: 4,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('1000', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500)),
+                    Obx(() => Text('${UserController.pointFormat(_formatterPoint(index))}', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500))),
                     Image.asset('assets/icons/bets.png', width: 24)
                   ],
                 ),
@@ -117,7 +140,7 @@ class PlayerMPageState extends State<PlayerMPage> {
                   color: Color(0xFF38295E),
                   borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12))
                 ),
-                child: Text('S1', style: TextStyle(color: Colors.white, fontSize: 16)),
+                child: Obx(() => Text('S${_levelList[index]}', style: TextStyle(color: Colors.white, fontSize: 16))),
               )
             ),
           ],
@@ -135,7 +158,7 @@ class PlayerMPageState extends State<PlayerMPage> {
             ),
             borderRadius: BorderRadius.circular(8)
           ),
-          child: ElevatedButton(
+          child: Obx(() => ElevatedButton(
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.all(0),
               foregroundColor: Colors.white,
@@ -146,9 +169,9 @@ class PlayerMPageState extends State<PlayerMPage> {
               overlayColor: Colors.black26,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
-            onPressed: (){},
+            onPressed: _points > _formatterPoint(index) ? () => _onUpgrade(index) : null,
             child: Text('Upgrade', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
-          )
+          ))
         )
       ],
     );

@@ -356,6 +356,7 @@ Widget pBtn(context, { point, xp, claimed, callback }) {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       onPressed: claimed ? null : () {
+        Get.back();
         Utils.globalDialog(context, title: "Mission complete!", text: 'The passion burns on — your reward is here!', point: point, xp: xp, callback: callback);
       },
       child: Text(claimed ? 'Done' : 'Claim', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
