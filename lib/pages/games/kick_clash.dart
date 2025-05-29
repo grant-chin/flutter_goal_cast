@@ -18,6 +18,8 @@ class KickClash extends StatefulWidget {
 }
 
 class KickClashState extends State<KickClash> with SingleTickerProviderStateMixin {
+  int get _level => UserController.level.value;
+  String get _nickname => UserController.nickname.value;
   int get _freeCount => GameController.freeKick.value;
   int get _points => UserController.points.value;
 
@@ -82,6 +84,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
   @override
   void initState() {
     super.initState();
+    setState(() => _loading = true);
     _initAnim();
   }
 
@@ -445,7 +448,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Thomas021', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500, height: 1)),
+                        Obx(() => Text(_nickname, style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500, height: 1))),
                         Row(
                           spacing: 8,
                           children: List.generate(3, (index) => TurnItem('left', index)),
@@ -470,7 +473,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text('Thomas021', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500, height: 1)),
+                        Text(_nickname, style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500, height: 1)),
                         Row(
                           spacing: 8,
                           children: List.generate(3, (index) => TurnItem('right', index)),
@@ -564,7 +567,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
                   Image.asset('assets/images/game1/bg_red.png', height: 160),
                   Positioned(
                     left: 120,
-                    child: Container(
+                    child: Transform.rotate(angle: 15 * pi / 180, child: Container(
                       width: 80,
                       height: 80,
                       clipBehavior: Clip.antiAlias,
@@ -573,9 +576,9 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
                         border: Border.all(color: Color(0xFFE70C0C), width: 2),
                         borderRadius: BorderRadius.circular(80)
                       ),
-                    )
+                    ))
                   ),
-                  Positioned(left: 234, child: PlayerNameBox(name: 'Thomas021'))
+                  Positioned(left: 234, child: Obx(() => PlayerNameBox(name: _nickname)))
                 ],
               )
             ))
@@ -592,7 +595,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
                   Image.asset('assets/images/game1/bg_blue.png', height: 160),
                   Positioned(
                     right: 120,
-                    child: Container(
+                    child: Transform.rotate(angle: 15 * pi / 180, child: Container(
                       width: 80,
                       height: 80,
                       clipBehavior: Clip.antiAlias,
@@ -601,7 +604,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
                         border: Border.all(color: Color(0xFF1165E4), width: 2),
                         borderRadius: BorderRadius.circular(80)
                       ),
-                    )
+                    ))
                   ),
                   Positioned(right: 234, child: PlayerNameBox(name: 'System111', right: true)),
                 ],
@@ -693,7 +696,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text('$_leftScore', style: TextStyle(color: Colors.white, fontSize: 56, fontWeight: FontWeight.w700, fontFamily: 'Lexend', height: 1)),
-                      Text('Thomas021', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
+                      Obx(() => Text(_nickname, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700))),
                     ],
                   )
                 ],
@@ -720,7 +723,7 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text('$_rightScore', style: TextStyle(color: Colors.white, fontSize: 56, fontWeight: FontWeight.w700, fontFamily: 'Lexend', height: 1)),
-                      Text('Thomas021', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
+                      Text('System111', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700))
                     ],
                   ),
                   Container(
