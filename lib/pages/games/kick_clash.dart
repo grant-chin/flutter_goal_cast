@@ -18,7 +18,6 @@ class KickClash extends StatefulWidget {
 }
 
 class KickClashState extends State<KickClash> with SingleTickerProviderStateMixin {
-  int get _level => UserController.level.value;
   String get _nickname => UserController.nickname.value;
   int get _freeCount => GameController.freeKick.value;
   int get _points => UserController.points.value;
@@ -84,7 +83,6 @@ class KickClashState extends State<KickClash> with SingleTickerProviderStateMixi
   @override
   void initState() {
     super.initState();
-    setState(() => _loading = true);
     _initAnim();
   }
 
