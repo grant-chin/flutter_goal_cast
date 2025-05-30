@@ -31,74 +31,9 @@ class ProfilePageState extends State<ProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 48),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(image: AssetImage('assets/images/avator.png')),
-                          borderRadius: BorderRadius.circular(12)
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(1, 255, 247, 0.25),
-                          border: Border.all(color: Color(0xFF01FFF7)),
-                          borderRadius: BorderRadius.circular(8)
-                        ),
-                        child: Obx(() => Text('Lvl.$_level', style: TextStyle(color: Color(0xFF01FFF7), fontSize: 14, fontWeight: FontWeight.w500))),
-                      ),
-                      SizedBox(height: 8),
-                      Obx(() => Text(_nickname, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500)))
-                    ],
-                  )
-                ),
+                AccountInfo(),
                 SizedBox(height: 32),
-                Row(
-                  spacing: 16,
-                  children: [
-                    Expanded(child: Container(
-                    height: 76,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(image: AssetImage('assets/images/bg/box_data.png'))
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset('assets/icons/bets.png', width: 32),
-                          SizedBox(height: 4),
-                          Obx(() => Text(_point, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)))
-                        ],
-                      ),
-                    )),
-                    Expanded(child: Container(
-                      height: 76,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(image: AssetImage('assets/images/bg/box_data.png'))
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset('assets/icons/exp.png', width: 32),
-                          SizedBox(height: 4),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Obx(() => Text('$_xp', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500))),
-                              Text(' / 500', style: TextStyle(color: Colors.white30, fontSize: 16, fontWeight: FontWeight.w500)),
-                            ]
-                          )
-                        ],
-                      ),
-                    )),
-                  ],
-                ),
+                AccountData(),
                 SizedBox(height: 36),
                 Text('Settings', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
                 SizedBox(height: 12),
@@ -126,6 +61,87 @@ class ProfilePageState extends State<ProfilePage> {
           ),
         ],
       )
+    );
+  }
+
+  Widget AccountInfo() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 48),
+      child: Column(
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              image: DecorationImage(image: AssetImage('assets/images/avator.png')),
+              borderRadius: BorderRadius.circular(12)
+            ),
+          ),
+          SizedBox(height: 8),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+            decoration: BoxDecoration(
+              color: Color.fromRGBO(1, 255, 247, 0.25),
+              border: Border.all(color: Color(0xFF01FFF7)),
+              borderRadius: BorderRadius.circular(8)
+            ),
+            child: Obx(() => Text('Lvl.$_level', style: TextStyle(color: Color(0xFF01FFF7), fontSize: 14, fontWeight: FontWeight.w500))),
+          ),
+          SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // SizedBox(width: 32),
+              Obx(() => Text(_nickname, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500))),
+              // SizedBox(width: 8),
+              // Icon(Icons.create_outlined, color: Colors.white60, size: 22)
+            ],
+          )
+        ],
+      )
+    );
+  }
+
+  Widget AccountData() {
+    return Row(
+      spacing: 16,
+      children: [
+        Expanded(child: Container(
+        height: 76,
+          decoration: BoxDecoration(
+            image: DecorationImage(image: AssetImage('assets/images/bg/box_data.png'))
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/icons/bets.png', width: 32),
+              SizedBox(height: 4),
+              Obx(() => Text(_point, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)))
+            ],
+          ),
+        )),
+        Expanded(child: Container(
+          height: 76,
+          decoration: BoxDecoration(
+            image: DecorationImage(image: AssetImage('assets/images/bg/box_data.png'))
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/icons/exp.png', width: 32),
+              SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Obx(() => Text('$_xp', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500))),
+                  Text(' / 500', style: TextStyle(color: Colors.white30, fontSize: 16, fontWeight: FontWeight.w500)),
+                ]
+              )
+            ],
+          ),
+        )),
+      ],
     );
   }
 

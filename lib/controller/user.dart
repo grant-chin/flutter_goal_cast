@@ -19,7 +19,7 @@ class UserController extends GetxController {
   // 初始化
   static init() {
     avator.value = SharePref.getString('avator') ?? '';
-    nickname.value = SharePref.getString('nickname') ?? 'T';
+    nickname.value = SharePref.getString('nickname') ?? 'Thomas';
     level.value = SharePref.getInt('level') ?? 1;
     xp.value = SharePref.getInt('xp') ?? 0;
     xpAll.value = SharePref.getInt('xpAll') ?? 0;

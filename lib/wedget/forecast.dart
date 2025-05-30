@@ -98,7 +98,7 @@ class ForecastState extends State<Forecast> {
                 GestureDetector(
                   onTap: () {
                     if (amount > 100) {
-                      setState(() => amount -= 100);
+                      setState(() => amount -= 10);
                     } else {
                       Utils.toast('Minimum amount is 100');
                     }
@@ -120,8 +120,8 @@ class ForecastState extends State<Forecast> {
                 Spacer(),
                 GestureDetector(
                   onTap: () {
-                    if (amount <= _points - 100) {
-                      setState(() => amount += 100);
+                    if (amount <= _points - 10) {
+                      setState(() => amount += 10);
                     } else {
                       Utils.toast('Insufficient Balance');
                     }
